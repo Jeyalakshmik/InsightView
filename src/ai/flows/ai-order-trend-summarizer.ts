@@ -65,7 +65,7 @@ Focus on aspects like:
 Present the summary in a clear, easy-to-understand format. If there are no orders, state that no data is available for analysis.
 
 Customer Order Data (filtered by "{{{dateFilter}}}"):
-{{{JSON.stringify orders}}}
+{{{orders}}}
 `,
 });
 

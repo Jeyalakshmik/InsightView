@@ -66,31 +66,42 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
             let xValue = order[xAxisKey];
             const yValue = order[yAxisKey];
 
-            if (xValue === null || xValue === undefined) return acc;
+            if (xValue === null || xValue === undefined || yValue === null || yValue === undefined) return acc;
             
+            const originalXForSort = xValue;
+
             if (xAxisKey === 'orderDate' && ['bar', 'line', 'area'].includes(type)) {
-                xValue = new Date(xValue).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+                xValue = new Date(xValue as string).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
             }
 
             const key = String(xValue);
 
             if (!acc[key]) {
-                acc[key] = { [xAxisKey]: xValue, [yAxisKey]: 0 };
+                acc[key] = { 
+                    x: xValue, 
+                    y: 0,
+                    originalX: originalXForSort
+                };
             }
 
             if (isNumericY && typeof yValue === 'number') {
-                (acc[key][yAxisKey] as number) += yValue;
+                acc[key].y += yValue;
             } else {
-                (acc[key][yAxisKey] as number) += 1;
+                acc[key].y += 1;
             }
             
             return acc;
-        }, {} as Record<string, any>);
+        }, {} as Record<string, {x: any, y: number, originalX: any}>);
 
-        let chartData = Object.values(aggregatedData);
+        let chartData = Object.values(aggregatedData).map(d => ({
+            [xAxisKey]: d.x,
+            [yAxisKey]: d.y,
+            originalX: d.originalX,
+        }));
+
 
         if (xAxisKey === 'orderDate' && ['line', 'area'].includes(type)) {
-            chartData = chartData.sort((a, b) => new Date(a[xAxisKey]).getTime() - new Date(b[xAxisKey]).getTime());
+            chartData = chartData.sort((a, b) => new Date(a.originalX).getTime() - new Date(b.originalX).getTime());
         }
         
         return chartData;
@@ -143,16 +154,20 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
             <Area type="monotone" dataKey={chartConfig.yAxis} fill={chartConfig.color || COLORS[0]} stroke={chartConfig.color || COLORS[0]}/>
           </AreaChart>
         );
-      case 'scatter':
+      case 'scatter': {
+        const numericKeys = ['quantity', 'unitPrice', 'totalAmount'];
+        const xAxisType = numericKeys.includes(chartConfig.xAxis || '') ? 'number' : 'category';
+        const yAxisType = numericKeys.includes(chartConfig.yAxis || '') ? 'number' : 'category';
         return (
           <ScatterChart>
             <CartesianGrid />
-            <XAxis type="category" dataKey={chartConfig.xAxis} name={chartConfig.xAxis} />
-            <YAxis type="number" dataKey={chartConfig.yAxis} name={chartConfig.yAxis} />
+            <XAxis type={xAxisType} dataKey={chartConfig.xAxis} name={chartConfig.xAxis} />
+            <YAxis type={yAxisType} dataKey={chartConfig.yAxis} name={chartConfig.yAxis} />
             <Tooltip cursor={{ strokeDasharray: '3 3' }} />
             <Scatter name="Orders" data={data} fill={chartConfig.color || COLORS[0]} />
           </ScatterChart>
         );
+      }
       case 'pie':
         return (
           <PieChart>

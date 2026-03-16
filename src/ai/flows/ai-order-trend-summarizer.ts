@@ -47,10 +47,15 @@ export async function summarizeOrderTrends(input: AiOrderTrendSummarizerInput): 
 
 const prompt = ai.definePrompt({
   name: 'aiOrderTrendSummarizerPrompt',
-  input: {schema: AiOrderTrendSummarizerInputSchema},
+  input: {
+    schema: z.object({
+      orders: z.string(),
+      dateFilter: AiOrderTrendSummarizerInputSchema.shape.dateFilter,
+    }),
+  },
   output: {schema: AiOrderTrendSummarizerOutputSchema},
   prompt: `You are an AI assistant specialized in analyzing customer order data and identifying key trends and anomalies.
-You will be provided with a JSON array of customer orders and the date filter currently applied to the dashboard.
+You will be provided with a JSON string of customer orders and the date filter currently applied to the dashboard.
 
 Analyze the provided customer order data and generate a concise summary of key trends, anomalies, or important insights.
 Focus on aspects like:
@@ -62,7 +67,7 @@ Focus on aspects like:
 - Insights related to who created the orders (e.g., most productive order creator).
 - The impact of the applied date filter ({{{dateFilter}}}) on the observed trends.
 
-Present the summary in a clear, easy-to-understand format. If there are no orders, state that no data is available for analysis.
+Present the summary in a clear, easy-to-understand format. If the 'orders' data is an empty array or not valid JSON, state that no data is available for analysis.
 
 Customer Order Data (filtered by "{{{dateFilter}}}"):
 {{{orders}}}
@@ -76,7 +81,10 @@ const aiOrderTrendSummarizerFlow = ai.defineFlow(
     outputSchema: AiOrderTrendSummarizerOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await prompt({
+      dateFilter: input.dateFilter,
+      orders: JSON.stringify(input.orders, null, 2),
+    });
     return output!;
   }
 );

@@ -35,7 +35,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <Link href="/dashboard" legacyBehavior passHref>
+                <Link href="/dashboard" asChild>
                   <SidebarMenuButton
                     isActive={pathname === '/dashboard'}
                     tooltip="Dashboard"
@@ -46,7 +46,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link href="/orders" legacyBehavior passHref>
+                <Link href="/orders" asChild>
                   <SidebarMenuButton
                     isActive={pathname === '/orders'}
                     tooltip="Orders"

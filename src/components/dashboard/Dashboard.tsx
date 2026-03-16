@@ -54,17 +54,17 @@ export function Dashboard() {
   }, [layout]);
 
 
-  const addWidget = (type: WidgetType) => {
-    const newWidget: DashboardWidget = {
-      id: `widget-${Date.now()}`,
+  const startAddingWidget = (type: WidgetType) => {
+    const tempWidget: DashboardWidget = {
+      id: `new-widget-${Date.now()}`, // Temporary ID
       type,
       x: 0,
-      y: findNextAvailableY(layout),
-      w: type === 'table' ? 12 : 4,
-      h: 8,
+      y: 0,
+      w: 0,
+      h: 0,
       config: { title: `New ${type} Widget` } as any,
     };
-    setLayout(prev => ({ ...prev, widgets: [...prev.widgets, newWidget] }));
+    setConfiguringWidget(tempWidget);
   };
 
   const findNextAvailableY = (currentLayout: DashboardLayout) => {
@@ -83,12 +83,30 @@ export function Dashboard() {
   };
 
   const updateWidgetConfig = (widgetId: string, newConfig: any) => {
-    setLayout(prev => ({
-      ...prev,
-      widgets: prev.widgets.map(w =>
-        w.id === widgetId ? { ...w, config: { ...w.config, ...newConfig } } : w
-      ),
-    }));
+    if (widgetId.startsWith('new-widget-')) {
+      // This is a new widget being created
+      const type = configuringWidget?.type;
+      if (!type) return;
+
+      const newWidget: DashboardWidget = {
+        id: `widget-${Date.now()}`,
+        type,
+        x: 0,
+        y: findNextAvailableY(layout),
+        w: type === 'table' ? 12 : 4,
+        h: 8,
+        config: newConfig,
+      };
+      setLayout(prev => ({ ...prev, widgets: [...prev.widgets, newWidget] }));
+    } else {
+      // This is an existing widget being updated
+      setLayout(prev => ({
+        ...prev,
+        widgets: prev.widgets.map(w =>
+          w.id === widgetId ? { ...w, config: { ...w.config, ...newConfig } } : w
+        ),
+      }));
+    }
   };
 
    const handleLayoutChange = (newWidgets: DashboardWidget[]) => {
@@ -134,7 +152,7 @@ export function Dashboard() {
         </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
-        {isConfigMode && <WidgetPalette onAddWidget={addWidget} />}
+        {isConfigMode && <WidgetPalette onAddWidget={startAddingWidget} />}
         <main className="flex-1 overflow-y-auto p-4">
           {layout.widgets.length === 0 ? (
             <div className="flex h-full items-center justify-center rounded-lg border-2 border-dashed">

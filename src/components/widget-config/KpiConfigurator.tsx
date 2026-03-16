@@ -29,6 +29,8 @@ export function KpiConfigurator({ widget, onSave, onClose }: KpiConfiguratorProp
     onClose();
   };
 
+  const isCreating = widget.id.startsWith('new-widget-');
+
   return (
     <div className="space-y-4">
       <div>
@@ -79,7 +81,7 @@ export function KpiConfigurator({ widget, onSave, onClose }: KpiConfiguratorProp
       </div>
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSave}>Save Changes</Button>
+        <Button onClick={handleSave}>{isCreating ? 'Add Widget' : 'Save Changes'}</Button>
       </div>
     </div>
   );

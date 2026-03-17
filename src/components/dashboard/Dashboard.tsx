@@ -20,8 +20,9 @@ import type {
   DateFilter,
   WidgetType,
 } from '@/lib/types';
-import { Save, Settings, X } from 'lucide-react';
+import { Save, Settings, X, Trash2 } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { ClearDataDialog } from './ClearDataDialog';
 
 const defaultLayout: DashboardLayout = { widgets: [] };
 const DATE_FILTERS: DateFilter[] = [
@@ -40,6 +41,7 @@ export function Dashboard() {
   const [configuringWidget, setConfiguringWidget] =
     useState<DashboardWidget | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [isClearDataOpen, setIsClearDataOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -146,6 +148,13 @@ export function Dashboard() {
           <ThemeToggle />
           {isConfigMode ? (
             <>
+              <Button
+                variant="destructive"
+                onClick={() => setIsClearDataOpen(true)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Clear Data
+              </Button>
               <Button onClick={saveLayout}>
                 <Save className="mr-2 h-4 w-4" />
                 Save
@@ -198,6 +207,10 @@ export function Dashboard() {
         widget={configuringWidget}
         onClose={() => setConfiguringWidget(null)}
         onSave={updateWidgetConfig}
+      />
+      <ClearDataDialog
+        isOpen={isClearDataOpen}
+        onClose={() => setIsClearDataOpen(false)}
       />
     </div>
   );

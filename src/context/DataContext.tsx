@@ -14,6 +14,7 @@ interface DataContextType {
   addOrder: (order: CustomerOrder) => void;
   updateOrder: (order: CustomerOrder) => void;
   deleteOrder: (orderId: string) => void;
+  clearAllOrders: () => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -45,7 +46,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const updateOrder = (updatedOrder: CustomerOrder) => {
     setOrders(prevOrders =>
       prevOrders.map(order =>
-        order.id === updatedOrder.id ? updatedOrder : order
+        order.id === updatedOrder.id ? { ...order, ...updatedOrder } : order
       )
     );
   };
@@ -53,8 +54,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const deleteOrder = (orderId: string) => {
     setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
   };
+  
+  const clearAllOrders = () => {
+    setOrders([]);
+  };
 
-  const value = { orders, addOrder, updateOrder, deleteOrder };
+  const value = { orders, addOrder, updateOrder, deleteOrder, clearAllOrders };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 }

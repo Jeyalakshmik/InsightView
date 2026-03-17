@@ -23,13 +23,22 @@ export function WidgetWrapper({
 }: WidgetWrapperProps) {
   return (
     <div style={style}>
-      <Card className="h-full w-full flex flex-col group">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
-          <CardTitle className="text-base font-medium">
-            {(widget.config as any).title || `Widget ${widget.id}`}
-          </CardTitle>
+      <Card className="group flex h-full w-full flex-col transition-all duration-200 ease-in-out hover:shadow-lg hover:scale-[1.01]">
+        <CardHeader
+          className={`flex flex-row items-center justify-between space-y-0 p-4 ${
+            isConfigMode ? 'cursor-grab' : ''
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            {isConfigMode && (
+              <GripVertical className="h-4 w-4 text-muted-foreground" />
+            )}
+            <CardTitle className="text-base font-medium">
+              {(widget.config as any).title || `Widget ${widget.id}`}
+            </CardTitle>
+          </div>
           {isConfigMode && (
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
               <Button
                 variant="ghost"
                 size="icon"
@@ -49,7 +58,7 @@ export function WidgetWrapper({
             </div>
           )}
         </CardHeader>
-        <CardContent className="p-4 pt-0 flex-1">{children}</CardContent>
+        <CardContent className="flex-1 p-4 pt-0">{children}</CardContent>
       </Card>
     </div>
   );

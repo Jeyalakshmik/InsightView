@@ -13,7 +13,7 @@ import {
   SidebarInset,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, Package, Atom } from 'lucide-react';
+import { LayoutDashboard, Package, Signal } from 'lucide-react';
 import { DataProvider } from '@/context/DataContext';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2">
-              <Atom className="text-primary" size={24} />
+              <Signal className="text-primary" size={24} />
               <h1 className="text-xl font-bold">InsightView</h1>
             </div>
           </SidebarHeader>

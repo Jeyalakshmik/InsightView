@@ -7,10 +7,12 @@ import { PlusCircle, Search, LayoutDashboard, Table as TableIcon } from 'lucide-
 import type { CustomerOrder } from '@/lib/types';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
+import { useData } from '@/context/DataContext';
 
 export default function OrdersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<CustomerOrder | null>(null);
+  const { orders } = useData();
 
   const handleCreateNew = () => {
     setEditingOrder(null);
@@ -55,8 +57,23 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      <main className="flex-1 overflow-y-auto">
-        <OrderTable onEdit={handleEdit} />
+      <main className="flex-1 flex flex-col">
+        {orders && orders.length > 0 ? (
+          <OrderTable onEdit={handleEdit} />
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+                <TableIcon className="mx-auto h-16 w-16 text-muted-foreground/50" />
+                <h2 className="mt-4 text-xl font-semibold">No Orders Yet</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                    Click Create Order and enter your order information
+                </p>
+                <Button variant="default" className="mt-6" onClick={handleCreateNew}>
+                    Create order
+                </Button>
+            </div>
+          </div>
+        )}
       </main>
       <OrderForm
         isOpen={isFormOpen}

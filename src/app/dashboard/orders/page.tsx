@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { OrderTable } from '@/components/orders/OrderTable';
 import { OrderForm } from '@/components/orders/OrderForm';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Search, LayoutDashboard, Table as TableIcon } from 'lucide-react';
 import type { CustomerOrder } from '@/lib/types';
+import Link from 'next/link';
+import { Input } from '@/components/ui/input';
 
 export default function OrdersPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -26,17 +28,34 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <header className="border-b bg-card p-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Customer Orders</h1>
-          <Button onClick={handleCreateNew}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Create Order
-          </Button>
-        </div>
+    <div className="flex h-full flex-col p-4 md:p-6">
+      <header className="mb-4">
+        <h1 className="text-2xl font-bold">Customer Orders</h1>
+        <p className="text-muted-foreground">View and manage customer orders and details</p>
       </header>
-      <main className="flex-1 overflow-y-auto p-4">
+      
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+            <Button variant="ghost" size="sm" asChild>
+                <Link href="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link>
+            </Button>
+            <Button variant="secondary" size="sm">
+                <TableIcon className="mr-2 h-4 w-4" />Table
+            </Button>
+        </div>
+        <div className="flex items-center gap-2">
+            <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Search" className="pl-8" />
+            </div>
+            <Button onClick={handleCreateNew}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Create Order
+            </Button>
+        </div>
+      </div>
+
+      <main className="flex-1 overflow-y-auto">
         <OrderTable onEdit={handleEdit} />
       </main>
       <OrderForm

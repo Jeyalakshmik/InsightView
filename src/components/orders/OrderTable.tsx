@@ -37,31 +37,39 @@ export function OrderTable({ onEdit }: OrderTableProps) {
     currentPage * ROWS_PER_PAGE
   );
 
+  const getCustomerId = (order: CustomerOrder, index: number) => {
+    // Creating a customer ID for display, as it's not in the data model.
+    return `CUST-${String(index + 1).padStart(4, '0')}`;
+  }
+
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Customer</TableHead>
-              <TableHead>Product</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Order Date</TableHead>
+              <TableHead>S.no</TableHead>
+              <TableHead>Customer ID</TableHead>
+              <TableHead>Customer name</TableHead>
+              <TableHead>Email Id</TableHead>
+              <TableHead>Phone number</TableHead>
+              <TableHead>Address</TableHead>
+              <TableHead>Order ID</TableHead>
+              <TableHead>Order date</TableHead>
               <TableHead className="text-right"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedOrders.map(order => (
+            {paginatedOrders.map((order, index) => (
               <TableRow key={order.id}>
-                <TableCell>
-                  <div className="font-medium">{`${order.firstName} ${order.lastName}`}</div>
-                  <div className="text-sm text-muted-foreground">{order.email}</div>
-                </TableCell>
-                <TableCell>{order.product}</TableCell>
-                <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
-                <TableCell>{order.status}</TableCell>
-                <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+                <TableCell>{(currentPage - 1) * ROWS_PER_PAGE + index + 1}</TableCell>
+                <TableCell>{getCustomerId(order, (currentPage - 1) * ROWS_PER_PAGE + index)}</TableCell>
+                <TableCell>{`${order.firstName} ${order.lastName}`}</TableCell>
+                <TableCell>{order.email}</TableCell>
+                <TableCell>{order.phone}</TableCell>
+                <TableCell>{`${order.address}, ${order.city}, ${order.state}, ${order.country}`}</TableCell>
+                <TableCell>{order.id}</TableCell>
+                <TableCell>{new Date(order.orderDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

@@ -96,15 +96,17 @@ export function OrderForm({ isOpen, onClose, order }: OrderFormProps) {
 
   const onSubmit = (data: OrderFormData) => {
     if (order) {
-      updateOrder({ ...order, ...data });
+      const updatedOrderData = { ...order, ...data };
+      updateOrder(updatedOrderData);
       toast({ title: "Order Updated", description: "The order has been successfully updated." });
     } else {
-      addOrder({
+      const newOrder = {
         ...data,
         id: `ord-${Date.now()}`,
         orderDate: new Date().toISOString(),
-      });
-      toast({ title: "Order Created", description: "A new order has been successfully created." });
+      };
+      addOrder(newOrder);
+      toast({ variant: 'success', title: "Nice work!", description: `Your new order "${newOrder.id}" is now in the list.` });
     }
     onClose();
   };

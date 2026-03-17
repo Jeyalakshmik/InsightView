@@ -10,7 +10,6 @@ interface WidgetWrapperProps {
   onDelete: (widgetId: string) => void;
   onConfigure: (widget: DashboardWidget) => void;
   isConfigMode: boolean;
-  style?: React.CSSProperties;
 }
 
 export function WidgetWrapper({
@@ -19,10 +18,9 @@ export function WidgetWrapper({
   onDelete,
   onConfigure,
   isConfigMode,
-  style,
 }: WidgetWrapperProps) {
   return (
-    <div style={style}>
+    <div className="h-full">
       <Card className="group flex h-full w-full flex-col transition-all duration-200 ease-in-out hover:shadow-lg hover:scale-[1.01]">
         <CardHeader
           className={`flex flex-row items-center justify-between space-y-0 p-4 ${

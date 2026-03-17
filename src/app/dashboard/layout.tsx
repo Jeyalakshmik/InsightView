@@ -13,7 +13,7 @@ import {
   SidebarInset,
   SidebarFooter,
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, Package, Signal } from 'lucide-react';
+import { LayoutDashboard, Package } from 'lucide-react';
 import { DataProvider } from '@/context/DataContext';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -27,7 +27,51 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 p-2">
-              <Signal className="text-primary" size={24} />
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="text-primary"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeOpacity="0.5"
+                />
+                <path
+                  d="M12 22C14.5013 18.2974 15.9999 15.2954 16 12C15.9999 8.70461 14.5013 5.70261 12 2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M2 12H22"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M3.4502 17.5498C7.51062 14.887 10.3957 13.1198 12.0002 12C13.6047 10.8802 16.4898 9.11299 20.5502 6.4502"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M3.4502 6.4502C7.51062 9.11299 10.3957 10.8802 12.0002 12C13.6047 13.1198 16.4898 14.887 20.5502 17.5498"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               <h1 className="text-xl font-bold">InsightView</h1>
             </div>
           </SidebarHeader>

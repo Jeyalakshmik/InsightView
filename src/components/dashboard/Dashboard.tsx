@@ -23,6 +23,7 @@ import type {
 import { Save, Settings, X, Trash2 } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { ClearDataDialog } from './ClearDataDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const defaultLayout: DashboardLayout = { widgets: [] };
 const DATE_FILTERS: DateFilter[] = [
@@ -34,7 +35,7 @@ const DATE_FILTERS: DateFilter[] = [
 ];
 
 export function Dashboard() {
-  const { orders } = useData();
+  const { orders, clearAllOrders } = useData();
   const [layout, setLayout] = useState<DashboardLayout>(defaultLayout);
   const [isConfigMode, setIsConfigMode] = useState(false);
   const [dateFilter, setDateFilter] = useState<DateFilter>('All Time');
@@ -42,6 +43,7 @@ export function Dashboard() {
     useState<DashboardWidget | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [isClearDataOpen, setIsClearDataOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true);
@@ -118,6 +120,18 @@ export function Dashboard() {
 
   const handleLayoutChange = (newWidgets: DashboardWidget[]) => {
     setLayout({ widgets: newWidgets });
+  };
+
+  const handleClearData = () => {
+    clearAllOrders();
+    setLayout({ widgets: [] });
+    localStorage.removeItem('dashboardLayout');
+    setIsClearDataOpen(false);
+    toast({
+      title: 'All Data Cleared',
+      description: 'All order data and dashboard widgets have been removed.',
+      variant: 'destructive',
+    });
   };
 
   const filteredOrders = filterOrdersByDate(orders, dateFilter);
@@ -211,6 +225,7 @@ export function Dashboard() {
       <ClearDataDialog
         isOpen={isClearDataOpen}
         onClose={() => setIsClearDataOpen(false)}
+        onConfirm={handleClearData}
       />
     </div>
   );

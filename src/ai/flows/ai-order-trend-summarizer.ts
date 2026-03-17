@@ -65,7 +65,7 @@ Based on the provided JSON data, generate a summary covering the following point
 - **Key Performance Indicators:** Calculate and mention total revenue, total number of orders, and the average order value.
 - **Top Performers:** Identify the best-selling products.
 - **Status Overview:** Summarize the distribution of order statuses (e.g., how many are Pending, In Progress, Completed).
-- **Anomalies or Interesting Trends:** Point out any unusual patterns, such as a spike in sales for a particular product or a large number of pending orders.
+- **Anomalies or Interesting Trends:** Point out any unusual patterns, such as a spike in sales for a particular product, or a large number of pending orders.
 `,
 });
 

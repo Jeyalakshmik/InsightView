@@ -96,7 +96,7 @@ export function OrderForm({ isOpen, onClose, order }: OrderFormProps) {
 
   const onSubmit = (data: OrderFormData) => {
     if (order) {
-      updateOrder({ ...data, id: order.id, orderDate: order.orderDate });
+      updateOrder({ ...order, ...data });
       toast({ title: "Order Updated", description: "The order has been successfully updated." });
     } else {
       addOrder({

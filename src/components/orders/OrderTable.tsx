@@ -36,11 +36,24 @@ export function OrderTable({ onEdit }: OrderTableProps) {
     (currentPage - 1) * ROWS_PER_PAGE,
     currentPage * ROWS_PER_PAGE
   );
+  
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
 
-  const getCustomerId = (order: CustomerOrder, index: number) => {
-    // Creating a customer ID for display, as it's not in the data model.
-    return `CUST-${String(index + 1).padStart(4, '0')}`;
-  }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -49,13 +62,14 @@ export function OrderTable({ onEdit }: OrderTableProps) {
           <TableHeader>
             <TableRow>
               <TableHead>S.no</TableHead>
-              <TableHead>Customer ID</TableHead>
-              <TableHead>Customer name</TableHead>
-              <TableHead>Email Id</TableHead>
-              <TableHead>Phone number</TableHead>
-              <TableHead>Address</TableHead>
               <TableHead>Order ID</TableHead>
               <TableHead>Order date</TableHead>
+              <TableHead>Product</TableHead>
+              <TableHead>Quantity</TableHead>
+              <TableHead>Unit price</TableHead>
+              <TableHead>Total amount</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Created by</TableHead>
               <TableHead className="text-right"></TableHead>
             </TableRow>
           </TableHeader>
@@ -63,13 +77,14 @@ export function OrderTable({ onEdit }: OrderTableProps) {
             {paginatedOrders.map((order, index) => (
               <TableRow key={order.id}>
                 <TableCell>{(currentPage - 1) * ROWS_PER_PAGE + index + 1}</TableCell>
-                <TableCell>{getCustomerId(order, (currentPage - 1) * ROWS_PER_PAGE + index)}</TableCell>
-                <TableCell>{`${order.firstName} ${order.lastName}`}</TableCell>
-                <TableCell>{order.email}</TableCell>
-                <TableCell>{order.phone}</TableCell>
-                <TableCell>{`${order.address}, ${order.city}, ${order.state}, ${order.country}`}</TableCell>
                 <TableCell>{order.id}</TableCell>
-                <TableCell>{new Date(order.orderDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</TableCell>
+                <TableCell>{formatDate(order.orderDate)}</TableCell>
+                <TableCell>{order.product}</TableCell>
+                <TableCell>{order.quantity}</TableCell>
+                <TableCell>{formatCurrency(order.unitPrice)}</TableCell>
+                <TableCell>{formatCurrency(order.totalAmount)}</TableCell>
+                <TableCell>{order.status}</TableCell>
+                <TableCell>{order.createdBy}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

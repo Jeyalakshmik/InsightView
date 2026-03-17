@@ -3,30 +3,30 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
   @apply transition-colors duration-300;
 }
 
 @layer base {
   :root {
-    --background: 159 20% 95%;
+    --background: 210 40% 98%;
     --foreground: 222 47% 11%;
-    --card: 159 20% 98%;
+    --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
-    --popover: 159 20% 98%;
+    --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
     --primary: 159 44% 54%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 159 15% 90%;
+    --secondary: 210 40% 96.1%;
     --secondary-foreground: 222 47% 11%;
-    --muted: 159 15% 90%;
-    --muted-foreground: 159 10% 55%;
-    --accent: 159 44% 54%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 188 83% 44%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 159 10% 85%;
-    --input: 159 10% 90%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
     --ring: 159 44% 54%;
     --chart-1: 159 44% 54%;
     --chart-2: 159 50% 65%;
@@ -44,37 +44,37 @@ body {
     --sidebar-ring: 159 44% 54%;
   }
   .dark {
-    --background: 159 10% 11%;
-    --foreground: 159 15% 98%;
-    --card: 159 10% 11%;
-    --card-foreground: 159 15% 98%;
-    --popover: 159 10% 11%;
-    --popover-foreground: 159 15% 98%;
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
     --primary: 159 44% 54%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 159 15% 17%;
-    --secondary-foreground: 159 15% 98%;
-    --muted: 159 15% 17%;
-    --muted-foreground: 159 10% 65%;
-    --accent: 159 44% 54%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 188 83% 44%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 159 15% 17%;
-    --input: 159 15% 17%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
     --ring: 159 44% 54%;
     --chart-1: 159 44% 54%;
     --chart-2: 159 50% 65%;
     --chart-3: 159 55% 75%;
     --chart-4: 159 35% 45%;
     --chart-5: 159 30% 35%;
-    --sidebar-background: 159 10% 11%;
-    --sidebar-foreground: 159 15% 98%;
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 159 44% 54%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 159 15% 17%;
-    --sidebar-accent-foreground: 159 15% 98%;
-    --sidebar-border: 159 15% 17%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
     --sidebar-ring: 159 44% 54%;
   }
 }
@@ -85,5 +85,14 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .react-grid-item.react-grid-placeholder {
+    @apply bg-primary/20 rounded-lg;
+  }
+}
+
+@layer components {
+  .kpi-widget .recharts-responsive-container {
+    height: 100% !important;
   }
 }

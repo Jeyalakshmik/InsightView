@@ -8,7 +8,6 @@ import {
   useEffect,
 } from 'react';
 import type { CustomerOrder } from '@/lib/types';
-import { INITIAL_ORDERS } from '@/lib/data';
 
 interface DataContextType {
   orders: CustomerOrder[];
@@ -28,7 +27,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     if (storedOrders) {
       setOrders(JSON.parse(storedOrders));
     } else {
-      setOrders(INITIAL_ORDERS);
+      setOrders([]);
     }
     setIsInitialized(true);
   }, []);

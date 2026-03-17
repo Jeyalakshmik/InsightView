@@ -59,7 +59,12 @@ export function Dashboard() {
   const saveLayout = useCallback(() => {
     localStorage.setItem('dashboardLayout', JSON.stringify(layout));
     setIsConfigMode(false);
-  }, [layout]);
+    toast({
+      variant: 'success',
+      title: 'All set!',
+      description: 'Your widgets have been added successfully!',
+    });
+  }, [layout, toast]);
 
   const startAddingWidget = (type: WidgetType) => {
     const tempWidget: DashboardWidget = {

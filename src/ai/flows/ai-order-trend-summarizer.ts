@@ -23,8 +23,8 @@ const CustomerOrderSchema = z.object({
   country: z.string().describe('Country of the customer.'),
   product: z.string().describe('Name of the product ordered.'),
   quantity: z.number().int().positive().describe('Quantity of the product ordered.'),
-  unitPrice: z.number().positive().describe('Unit price of the product.'),
-  totalAmount: z.number().positive().describe('Total amount of the order.'),
+  unitPrice: z.number().min(0).describe('Unit price of the product.'),
+  totalAmount: z.number().min(0).describe('Total amount of the order.'),
   status: z.enum(['Pending', 'In Progress', 'Completed']).describe('Current status of the order.'),
   createdBy: z.string().describe('The user who created this order record.'),
   orderDate: z.string().datetime().describe('Date and time when the order was placed (ISO 8601 format).').optional(),
@@ -75,6 +75,9 @@ const aiOrderTrendSummarizerFlow = ai.defineFlow(
     outputSchema: AiOrderTrendSummarizerOutputSchema,
   },
   async input => {
+    if (!input.orders || input.orders.length === 0) {
+      return { summary: 'No order data is available for the selected period.' };
+    }
     const {output} = await prompt(input);
     return output!;
   }

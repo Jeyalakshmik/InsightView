@@ -22,7 +22,7 @@ const CustomerOrderSchema = z.object({
   postalCode: z.string().describe('Postal code of the customer.'),
   country: z.string().describe('Country of the customer.'),
   product: z.string().describe('Name of the product ordered.'),
-  quantity: z.number().int().positive().describe('Quantity of the product ordered.'),
+  quantity: z.number().int().min(1).describe('Quantity of the product ordered.'),
   unitPrice: z.number().min(0).describe('Unit price of the product.'),
   totalAmount: z.number().min(0).describe('Total amount of the order.'),
   status: z.enum(['Pending', 'In Progress', 'Completed']).describe('Current status of the order.'),
@@ -47,6 +47,7 @@ export async function summarizeOrderTrends(input: AiOrderTrendSummarizerInput): 
 
 const prompt = ai.definePrompt({
   name: 'aiOrderTrendSummarizerPrompt',
+  model: 'googleai/gemini-1.5-flash-latest',
   input: {
     schema: AiOrderTrendSummarizerInputSchema,
   },

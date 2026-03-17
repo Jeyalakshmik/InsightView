@@ -31,84 +31,78 @@ const COLORS = ['#2268CC', '#1CBFDB', '#8884d8', '#82ca9d', '#ffc658'];
 
 export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
   const data = useMemo(() => {
-    if ((!('xAxis' in config) || !config.xAxis) && (!('dataKey' in config) || !config.dataKey)) return [];
-    if (!orders.length) return [];
-    
-    const dataKey = 'dataKey' in config ? config.dataKey : undefined;
-    const xAxisKey = 'xAxis' in config ? config.xAxis : undefined;
-    const yAxisKey = 'yAxis' in config ? config.yAxis : undefined;
-
-    if (type === 'pie' && dataKey) {
-        const aggregated = orders.reduce((acc, order) => {
-            const key = order[dataKey];
-            if (typeof key === 'string' || typeof key === 'number') {
-                const value = (acc[key] || 0) + 1;
-                acc[key] = value;
-            }
-            return acc;
-        }, {} as Record<string, number>);
-        
-        return Object.entries(aggregated).map(([name, value]) => ({ name, value }));
-    }
-    
-    if (xAxisKey && yAxisKey) {
-        if (type === 'scatter') {
-            return orders.map(o => ({
-                [xAxisKey]: o[xAxisKey],
-                [yAxisKey]: o[yAxisKey],
-            }));
+    if (type === 'pie') {
+      const pieConfig = config as PieChartConfig;
+      if (!pieConfig.dataKey || !orders.length) return [];
+      const aggregated = orders.reduce((acc, order) => {
+        const key = order[pieConfig.dataKey];
+        if (typeof key === 'string' || typeof key === 'number') {
+          const strKey = String(key);
+          acc[strKey] = (acc[strKey] || 0) + 1;
         }
-
-        const numericYKeys = ['quantity', 'unitPrice', 'totalAmount'];
-        const isNumericY = numericYKeys.includes(yAxisKey);
-
-        const aggregatedData = orders.reduce((acc, order) => {
-            let xValue = order[xAxisKey];
-            const yValue = order[yAxisKey];
-
-            if (xValue === null || xValue === undefined || yValue === null || yValue === undefined) return acc;
-            
-            const originalXForSort = xValue;
-
-            if (xAxisKey === 'orderDate' && ['bar', 'line', 'area'].includes(type)) {
-                xValue = new Date(xValue as string).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
-            }
-
-            const key = String(xValue);
-
-            if (!acc[key]) {
-                acc[key] = { 
-                    x: xValue, 
-                    y: 0,
-                    originalX: originalXForSort
-                };
-            }
-
-            if (isNumericY && typeof yValue === 'number') {
-                acc[key].y += yValue;
-            } else {
-                acc[key].y += 1;
-            }
-            
-            return acc;
-        }, {} as Record<string, {x: any, y: number, originalX: any}>);
-
-        let chartData = Object.values(aggregatedData).map(d => ({
-            [xAxisKey]: d.x,
-            [yAxisKey]: d.y,
-            originalX: d.originalX,
-        }));
-
-
-        if (xAxisKey === 'orderDate' && ['line', 'area'].includes(type)) {
-            chartData = chartData.sort((a, b) => new Date(a.originalX).getTime() - new Date(b.originalX).getTime());
-        }
-        
-        return chartData;
+        return acc;
+      }, {} as Record<string, number>);
+      return Object.entries(aggregated).map(([name, value]) => ({ name, value }));
     }
 
+    const chartConfig = config as ChartConfig;
+    if (!chartConfig.xAxis || !chartConfig.yAxis || !orders.length) return [];
 
-    return [];
+    const { xAxis: xAxisKey, yAxis: yAxisKey } = chartConfig;
+
+    if (type === 'scatter') {
+      return orders.map(o => ({
+        [xAxisKey]: o[xAxisKey],
+        [yAxisKey]: o[yAxisKey],
+      }));
+    }
+
+    const numericYKeys = ['quantity', 'unitPrice', 'totalAmount'];
+    const isNumericY = numericYKeys.includes(yAxisKey);
+
+    const aggregatedData = orders.reduce((acc, order) => {
+      let xValue = order[xAxisKey];
+      const yValue = order[yAxisKey];
+
+      if (xValue === null || xValue === undefined || yValue === null || yValue === undefined) return acc;
+      
+      const originalXForSort = xValue;
+
+      if (xAxisKey === 'orderDate') {
+        xValue = new Date(xValue as string).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+      }
+
+      const key = String(xValue);
+
+      if (!acc[key]) {
+        acc[key] = { 
+          x: xValue, 
+          y: 0,
+          originalX: originalXForSort
+        };
+      }
+
+      if (isNumericY && typeof yValue === 'number') {
+        acc[key].y += yValue;
+      } else {
+        acc[key].y += 1;
+      }
+      
+      return acc;
+    }, {} as Record<string, {x: any, y: number, originalX: any}>);
+
+    let chartData = Object.values(aggregatedData).map(d => ({
+      [xAxisKey]: d.x,
+      [yAxisKey]: d.y,
+      originalX: d.originalX,
+    }));
+
+
+    if (xAxisKey === 'orderDate' && ['line', 'area'].includes(type)) {
+      chartData = chartData.sort((a, b) => new Date(a.originalX).getTime() - new Date(b.originalX).getTime());
+    }
+    
+    return chartData;
   }, [orders, config, type]);
 
 

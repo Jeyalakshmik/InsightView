@@ -31,7 +31,7 @@ export function Toaster() {
         return (
           <Toast key={id} {...props}>
             <div className="flex items-start gap-3">
-              {isSuccess && <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />}
+              {isSuccess && <CheckCircle className="mt-1 h-5 w-5 flex-shrink-0" />}
               <div className="grid flex-1 gap-1">
                 {title && <ToastTitle>{title}</ToastTitle>}
                 {description && (

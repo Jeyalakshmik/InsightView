@@ -17,6 +17,7 @@ import {
   Legend,
   ResponsiveContainer,
   Cell,
+  Label,
 } from 'recharts';
 import type { CustomerOrder, WidgetType, ChartConfig, PieChartConfig } from '@/lib/types';
 import { useMemo } from 'react';
@@ -110,6 +111,11 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
     return <div className="flex h-full items-center justify-center text-muted-foreground">No data to display or widget not configured.</div>;
   }
 
+  const formatAxisLabel = (key: string | undefined) => {
+    if (!key) return '';
+    return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+  }
+
   const renderChart = () => {
     const chartConfig = config as ChartConfig;
     const pieConfig = config as PieChartConfig;
@@ -117,10 +123,14 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
     switch (type) {
       case 'bar':
         return (
-          <BarChart data={data}>
+          <BarChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={chartConfig.xAxis} />
-            <YAxis />
+            <XAxis dataKey={chartConfig.xAxis}>
+              <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />
+            </XAxis>
+            <YAxis>
+              <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+            </YAxis>
             <Tooltip />
             <Legend />
             <Bar dataKey={chartConfig.yAxis} fill={chartConfig.color || COLORS[0]} />
@@ -128,10 +138,14 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
         );
       case 'line':
         return (
-          <LineChart data={data}>
+          <LineChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={chartConfig.xAxis} />
-            <YAxis />
+            <XAxis dataKey={chartConfig.xAxis}>
+              <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />
+            </XAxis>
+            <YAxis>
+              <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+            </YAxis>
             <Tooltip />
             <Legend />
             <Line type="monotone" dataKey={chartConfig.yAxis} stroke={chartConfig.color || COLORS[0]} />
@@ -139,10 +153,14 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
         );
       case 'area':
         return (
-          <AreaChart data={data}>
+          <AreaChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey={chartConfig.xAxis} />
-            <YAxis />
+            <XAxis dataKey={chartConfig.xAxis}>
+              <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />
+            </XAxis>
+            <YAxis>
+              <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+            </YAxis>
             <Tooltip />
             <Legend />
             <Area type="monotone" dataKey={chartConfig.yAxis} fill={chartConfig.color || COLORS[0]} stroke={chartConfig.color || COLORS[0]}/>
@@ -153,10 +171,14 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
         const xAxisType = numericKeys.includes(chartConfig.xAxis || '') ? 'number' : 'category';
         const yAxisType = numericKeys.includes(chartConfig.yAxis || '') ? 'number' : 'category';
         return (
-          <ScatterChart>
+          <ScatterChart margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
             <CartesianGrid />
-            <XAxis type={xAxisType} dataKey={chartConfig.xAxis} name={chartConfig.xAxis} />
-            <YAxis type={yAxisType} dataKey={chartConfig.yAxis} name={chartConfig.yAxis} />
+            <XAxis type={xAxisType} dataKey={chartConfig.xAxis} name={chartConfig.xAxis}>
+              <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />
+            </XAxis>
+            <YAxis type={yAxisType} dataKey={chartConfig.yAxis} name={chartConfig.yAxis}>
+              <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+            </YAxis>
             <Tooltip cursor={{ strokeDasharray: '3 3' }} />
             <Scatter name="Orders" data={data} fill={chartConfig.color || COLORS[0]} />
           </ScatterChart>

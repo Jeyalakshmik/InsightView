@@ -27,7 +27,7 @@ export type WidgetType =
   | 'area'
   | 'scatter';
 
-export type KpiDataFormat = 'Number' | 'Currency' | 'Percentage';
+export type KpiDataFormat = 'Number' | 'Currency';
 
 export interface BaseWidgetConfig {
   title: string;

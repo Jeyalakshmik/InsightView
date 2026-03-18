@@ -34,22 +34,25 @@ interface KpiConfiguratorProps {
   onClose: () => void;
 }
 
-const METRIC_OPTIONS: (keyof CustomerOrder)[] = [
-  'id',
-  'email',
-  'country',
-  'product',
-  'status',
-  'createdBy',
-  'quantity',
-  'unitPrice',
-  'totalAmount',
+const METRIC_OPTIONS: { value: keyof CustomerOrder; label: string }[] = [
+    { value: 'id', label: 'Customer ID' },
+    { value: 'firstName', label: 'First Name' },
+    { value: 'lastName', label: 'Last Name' },
+    { value: 'email', label: 'Email' },
+    { value: 'address', label: 'Address' },
+    { value: 'orderDate', label: 'Order Date' },
+    { value: 'product', label: 'Product' },
+    { value: 'createdBy', label: 'Created By' },
+    { value: 'status', label: 'Status' },
+    { value: 'totalAmount', label: 'Total Amount' },
+    { value: 'unitPrice', label: 'Unit Price' },
+    { value: 'quantity', label: 'Quantity' },
+    { value: 'country', label: 'Country' },
 ];
-const AGGREGATION_OPTIONS = ['sum', 'average', 'count'];
+const AGGREGATION_OPTIONS: ('sum' | 'average' | 'count')[] = ['sum', 'average', 'count'];
 const DATAFORMAT_OPTIONS: KpiDataFormat[] = [
   'Number',
   'Currency',
-  'Percentage',
 ];
 
 const kpiConfigSchema = z.object({
@@ -77,27 +80,28 @@ export function KpiConfigurator({
   const form = useForm<KpiFormValues>({
     resolver: zodResolver(kpiConfigSchema),
     defaultValues: {
-      title: (widget.config as KpiConfig).title || 'Untitled',
+      title: (widget.config as KpiConfig).title || '',
       description: (widget.config as KpiConfig).description || '',
       w: widget.w || 2,
       h: widget.h || 2,
       metric: (widget.config as KpiConfig).metric || '',
-      aggregation: (widget.config as KpiConfig).aggregation || '',
+      aggregation: (widget.config as KpiConfig).aggregation || 'count',
       dataFormat: (widget.config as KpiConfig).dataFormat || 'Number',
       decimalPrecision: (widget.config as KpiConfig).decimalPrecision ?? 0,
     },
   });
 
   useEffect(() => {
+    const config = widget.config as KpiConfig;
     form.reset({
-      title: (widget.config as KpiConfig).title || 'Untitled',
-      description: (widget.config as KpiConfig).description || '',
+      title: config.title || (widget.id.startsWith('new-widget-') ? '' : 'Untitled'),
+      description: config.description || '',
       w: widget.w || 2,
       h: widget.h || 2,
-      metric: (widget.config as KpiConfig).metric || '',
-      aggregation: (widget.config as KpiConfig).aggregation || '',
-      dataFormat: (widget.config as KpiConfig).dataFormat || 'Number',
-      decimalPrecision: (widget.config as KpiConfig).decimalPrecision ?? 0,
+      metric: config.metric || '',
+      aggregation: config.aggregation || 'count',
+      dataFormat: config.dataFormat || 'Number',
+      decimalPrecision: config.decimalPrecision ?? 0,
     });
   }, [widget, form]);
 
@@ -122,7 +126,7 @@ export function KpiConfigurator({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Widget title *</FormLabel>
+              <FormLabel>Widget title <span className="text-destructive">*</span></FormLabel>
               <FormControl>
                 <Input placeholder="Total orders" {...field} />
               </FormControl>
@@ -131,7 +135,7 @@ export function KpiConfigurator({
           )}
         />
         <FormItem>
-          <FormLabel>Widget type *</FormLabel>
+          <FormLabel>Widget type</FormLabel>
           <FormControl>
             <Input disabled value="KPI" />
           </FormControl>
@@ -161,7 +165,7 @@ export function KpiConfigurator({
               name="w"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Width (Columns) *</FormLabel>
+                  <FormLabel>Width (Columns) <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
@@ -174,7 +178,7 @@ export function KpiConfigurator({
               name="h"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Height (Rows) *</FormLabel>
+                  <FormLabel>Height (Rows) <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
@@ -192,7 +196,7 @@ export function KpiConfigurator({
             name="metric"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Select metric *</FormLabel>
+                <FormLabel>Select metric <span className="text-destructive">*</span></FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -204,8 +208,8 @@ export function KpiConfigurator({
                   </FormControl>
                   <SelectContent>
                     {METRIC_OPTIONS.map(option => (
-                      <SelectItem key={option} value={option}>
-                        {option}
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -219,7 +223,7 @@ export function KpiConfigurator({
             name="aggregation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Aggregation *</FormLabel>
+                <FormLabel>Aggregation <span className="text-destructive">*</span></FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -231,7 +235,7 @@ export function KpiConfigurator({
                   </FormControl>
                   <SelectContent>
                     {AGGREGATION_OPTIONS.map(option => (
-                      <SelectItem key={option} value={option}>
+                      <SelectItem key={option} value={option} className="capitalize">
                         {option}
                       </SelectItem>
                     ))}
@@ -246,7 +250,7 @@ export function KpiConfigurator({
             name="dataFormat"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Data format *</FormLabel>
+                <FormLabel>Data format <span className="text-destructive">*</span></FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -273,7 +277,7 @@ export function KpiConfigurator({
             name="decimalPrecision"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Decimal Precision *</FormLabel>
+                <FormLabel>Decimal Precision <span className="text-destructive">*</span></FormLabel>
                 <FormControl>
                   <Input type="number" min="0" max="5" {...field} />
                 </FormControl>

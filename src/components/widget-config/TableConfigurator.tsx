@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MultiSelect, type MultiSelectOption } from '@/components/ui/MultiSelect';
+import type { MultiSelectOption } from '@/components/ui/MultiSelect';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import type { DashboardWidget, TableConfig, CustomerOrder, TableFilterOperator } from '@/lib/types';
 import { ScrollArea } from '../ui/scroll-area';
@@ -60,8 +60,7 @@ const tableConfigSchema = z.object({
   h: z.coerce.number().int().min(1, 'Height must be at least 1'),
   columns: z.array(z.string()).min(1, 'Please select at least one column'),
   rowsPerPage: z.coerce.number(),
-  sortBy: z.string().optional(),
-  sortDirection: z.enum(['asc', 'desc']).optional(),
+  sort: z.string().optional(),
   applyFilters: z.boolean().optional(),
   filters: z.array(z.object({
     attribute: z.string().min(1, "Required"),
@@ -79,21 +78,23 @@ export function TableConfigurator({
   onSave,
   onClose,
 }: TableConfiguratorProps) {
+  const config = widget.config as TableConfig;
+  const initialSort = config.sort || (config.sortBy && config.sortDirection ? `${config.sortBy}-${config.sortDirection}` : '');
+
   const form = useForm<TableFormValues>({
     resolver: zodResolver(tableConfigSchema),
     defaultValues: {
-      title: (widget.config as TableConfig).title || 'Untitled',
-      description: (widget.config as TableConfig).description || '',
+      title: config.title || 'Untitled',
+      description: config.description || '',
       w: widget.w,
       h: widget.h,
-      columns: (widget.config as TableConfig).columns || [],
-      rowsPerPage: (widget.config as TableConfig).rowsPerPage || 5,
-      sortBy: (widget.config as TableConfig).sortBy || '',
-      sortDirection: (widget.config as TableConfig).sortDirection || 'asc',
-      applyFilters: (widget.config as TableConfig).applyFilters || false,
-      filters: (widget.config as TableConfig).filters || [],
-      fontSize: (widget.config as TableConfig).fontSize || 14,
-      headerBackgroundColor: (widget.config as TableConfig).headerBackgroundColor || '#D8D8D8',
+      columns: config.columns || [],
+      rowsPerPage: config.rowsPerPage || 5,
+      sort: initialSort,
+      applyFilters: config.applyFilters || false,
+      filters: config.filters || [],
+      fontSize: config.fontSize || 14,
+      headerBackgroundColor: config.headerBackgroundColor || '#D8D8D8',
     },
   });
   
@@ -103,21 +104,23 @@ export function TableConfigurator({
   });
 
   const watchApplyFilters = form.watch('applyFilters');
+  const watchColumns = form.watch('columns');
 
   useEffect(() => {
+    const config = widget.config as TableConfig;
+    const initialSort = config.sort || (config.sortBy && config.sortDirection ? `${config.sortBy}-${config.sortDirection}` : '');
     form.reset({
-      title: (widget.config as TableConfig).title || 'Untitled',
-      description: (widget.config as TableConfig).description || '',
+      title: config.title || 'Untitled',
+      description: config.description || '',
       w: widget.w,
       h: widget.h,
-      columns: (widget.config as TableConfig).columns || [],
-      rowsPerPage: (widget.config as TableConfig).rowsPerPage || 5,
-      sortBy: (widget.config as TableConfig).sortBy || '',
-      sortDirection: (widget.config as TableConfig).sortDirection || 'asc',
-      applyFilters: (widget.config as TableConfig).applyFilters || false,
-      filters: (widget.config as TableConfig).filters || [],
-      fontSize: (widget.config as TableConfig).fontSize || 14,
-      headerBackgroundColor: (widget.config as TableConfig).headerBackgroundColor || '#D8D8D8',
+      columns: config.columns || [],
+      rowsPerPage: config.rowsPerPage || 5,
+      sort: initialSort,
+      applyFilters: config.applyFilters || false,
+      filters: config.filters || [],
+      fontSize: config.fontSize || 14,
+      headerBackgroundColor: config.headerBackgroundColor || '#D8D8D8',
     });
   }, [widget, form]);
 
@@ -126,7 +129,6 @@ export function TableConfigurator({
       ...values,
       columns: values.columns as (keyof CustomerOrder)[],
       rowsPerPage: values.rowsPerPage as 5 | 10 | 15,
-      sortBy: values.sortBy as keyof CustomerOrder,
       filters: values.filters as any,
     };
     onSave(widget.id, newConfig);
@@ -200,46 +202,62 @@ export function TableConfigurator({
                     <FormField
                       control={form.control}
                       name="columns"
-                      render={({ field }) => (
+                      render={() => (
                         <FormItem>
                           <FormLabel>Choose columns <span className="text-destructive">*</span></FormLabel>
-                          <FormControl>
-                            <MultiSelect
-                              options={COLUMN_OPTIONS}
-                              selected={field.value}
-                              onChange={field.onChange}
-                              placeholder="Select columns..."
-                            />
-                          </FormControl>
+                           <ScrollArea className="h-40 rounded-md border p-4">
+                            {COLUMN_OPTIONS.map((option) => (
+                              <FormField
+                                key={option.value}
+                                control={form.control}
+                                name="columns"
+                                render={({ field }) => {
+                                  return (
+                                    <FormItem key={option.value} className="flex flex-row items-center space-x-3 space-y-0 mb-2">
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value?.includes(option.value)}
+                                          onCheckedChange={(checked) => {
+                                            const newColumns = checked
+                                              ? [...field.value, option.value]
+                                              : field.value?.filter(
+                                                  (value) => value !== option.value
+                                                );
+                                            field.onChange(newColumns);
+                                          }}
+                                        />
+                                      </FormControl>
+                                      <FormLabel className="font-normal">
+                                        {option.label}
+                                      </FormLabel>
+                                    </FormItem>
+                                  )
+                                }}
+                              />
+                            ))}
+                          </ScrollArea>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <div className="grid grid-cols-2 gap-4">
-                        <FormField control={form.control} name="sortBy" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Sort by</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Select column" /></SelectTrigger></FormControl>
-                                    <SelectContent>
-                                        {form.getValues('columns').map(c => <SelectItem key={c} value={c}>{(COLUMN_OPTIONS.find(o => o.value === c) || {label: c}).label}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                            </FormItem>
-                        )} />
-                        <FormField control={form.control} name="sortDirection" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Direction</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Select direction" /></SelectTrigger></FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="asc">Ascending</SelectItem>
-                                        <SelectItem value="desc">Descending</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormItem>
-                        )} />
-                    </div>
+                     <FormField control={form.control} name="sort" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Sort by</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl><SelectTrigger><SelectValue placeholder="Select sort option" /></SelectTrigger></FormControl>
+                                <SelectContent>
+                                    {watchColumns.flatMap(c => {
+                                        const columnLabel = (COLUMN_OPTIONS.find(o => o.value === c) || {label: c}).label;
+                                        return [
+                                            <SelectItem key={`${c}-asc`} value={`${c}-asc`}>{`${columnLabel} (Ascending)`}</SelectItem>,
+                                            <SelectItem key={`${c}-desc`} value={`${c}-desc`}>{`${columnLabel} (Descending)`}</SelectItem>
+                                        ]
+                                    })}
+                                </SelectContent>
+                            </Select>
+                        </FormItem>
+                    )} />
+
                     <FormField control={form.control} name="rowsPerPage" render={({ field }) => (
                         <FormItem className="space-y-3">
                             <FormLabel>Pagination <span className="text-destructive">*</span></FormLabel>

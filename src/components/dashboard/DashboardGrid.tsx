@@ -13,7 +13,7 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 interface DashboardGridProps {
   widgets: DashboardWidget[];
   onLayoutChange: (layout: DashboardWidget[]) => void;
-  onDelete: (widgetId: string) => void;
+  onDelete: (widget: DashboardWidget) => void;
   onConfigure: (widget: DashboardWidget) => void;
   isConfigMode: boolean;
   orders: CustomerOrder[];

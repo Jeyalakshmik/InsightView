@@ -33,6 +33,7 @@ import { ThemeToggle } from '../ui/ThemeToggle';
 import { useToast } from '@/hooks/use-toast';
 import { StatCard } from './StatCard';
 import { PendingOrders } from './PendingOrders';
+import { DeleteWidgetDialog } from './DeleteWidgetDialog';
 
 const defaultLayout: DashboardLayout = { widgets: [] };
 const DATE_FILTERS: DateFilter[] = [
@@ -49,6 +50,8 @@ export function Dashboard() {
   const [isConfigMode, setIsConfigMode] = useState(false);
   const [dateFilter, setDateFilter] = useState<DateFilter>('All Time');
   const [configuringWidget, setConfiguringWidget] =
+    useState<DashboardWidget | null>(null);
+  const [deletingWidget, setDeletingWidget] =
     useState<DashboardWidget | null>(null);
   const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
@@ -100,6 +103,18 @@ export function Dashboard() {
       ...prev,
       widgets: prev.widgets.filter(w => w.id !== widgetId),
     }));
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingWidget) {
+      deleteWidget(deletingWidget.id);
+      setDeletingWidget(null);
+      toast({
+        variant: 'destructive',
+        title: 'Widget Deleted',
+        description: 'The widget has been removed from your dashboard.',
+      });
+    }
   };
 
   const updateWidgetConfig = (widgetId: string, newConfig: any) => {
@@ -229,7 +244,7 @@ export function Dashboard() {
             <DashboardGrid
               widgets={layout.widgets}
               onLayoutChange={handleLayoutChange}
-              onDelete={deleteWidget}
+              onDelete={setDeletingWidget}
               onConfigure={setConfiguringWidget}
               isConfigMode={isConfigMode}
               orders={filteredOrders}
@@ -257,6 +272,14 @@ export function Dashboard() {
         onClose={() => setConfiguringWidget(null)}
         onSave={updateWidgetConfig}
       />
+      {deletingWidget && (
+        <DeleteWidgetDialog
+          isOpen={!!deletingWidget}
+          widget={deletingWidget}
+          onClose={() => setDeletingWidget(null)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
     </div>
   );
 }

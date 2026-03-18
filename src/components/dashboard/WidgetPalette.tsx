@@ -53,28 +53,40 @@ const widgetGroups = [
 
 export function WidgetPalette({ onAddWidget }: WidgetPaletteProps) {
   return (
-    <aside className="w-64 border-r bg-card p-2">
-       <Accordion type="multiple" defaultValue={['charts', 'tables', 'kpis']} className="w-full">
+    <aside className="w-64 space-y-4 border-r bg-card p-4">
+      <div className="space-y-1">
+        <h3 className="text-lg font-semibold">Widget Library</h3>
+        <p className="text-sm text-muted-foreground">
+          Drag and drop to your canvas
+        </p>
+      </div>
+      <Accordion
+        type="multiple"
+        defaultValue={['charts', 'tables', 'kpis']}
+        className="w-full"
+      >
         {widgetGroups.map(group => (
-            <AccordionItem value={group.value} key={group.value}>
-                <AccordionTrigger className="px-2 text-sm font-medium hover:no-underline">{group.title}</AccordionTrigger>
-                <AccordionContent>
-                    <div className="flex flex-col gap-1">
-                    {group.items.map(option => (
-                        <Button
-                            key={option.type}
-                            variant="ghost"
-                            className="h-auto justify-start gap-2 p-2 text-sm font-normal"
-                            onClick={() => onAddWidget(option.type)}
-                        >
-                            <MoveVertical className="h-4 w-4 text-muted-foreground" />
-                            {option.icon}
-                            <span>{option.name}</span>
-                        </Button>
-                    ))}
-                    </div>
-                </AccordionContent>
-            </AccordionItem>
+          <AccordionItem value={group.value} key={group.value}>
+            <AccordionTrigger className="px-2 text-sm font-medium hover:no-underline">
+              {group.title}
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-1">
+                {group.items.map(option => (
+                  <Button
+                    key={option.type}
+                    variant="ghost"
+                    className="h-auto justify-start gap-2 p-2 text-sm font-normal"
+                    onClick={() => onAddWidget(option.type)}
+                  >
+                    <MoveVertical className="h-4 w-4 text-muted-foreground" />
+                    {option.icon}
+                    <span>{option.name}</span>
+                  </Button>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
         ))}
       </Accordion>
     </aside>

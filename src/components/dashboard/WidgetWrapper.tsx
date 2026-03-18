@@ -7,7 +7,7 @@ import { Settings, Trash2, GripVertical } from 'lucide-react';
 interface WidgetWrapperProps {
   widget: DashboardWidget;
   children: React.ReactNode;
-  onDelete: (widgetId: string) => void;
+  onDelete: (widget: DashboardWidget) => void;
   onConfigure: (widget: DashboardWidget) => void;
   isConfigMode: boolean;
 }
@@ -19,12 +19,14 @@ export function WidgetWrapper({
   onConfigure,
   isConfigMode,
 }: WidgetWrapperProps) {
-  const handleConfigureClick = () => {
+  const handleConfigureClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     onConfigure(widget);
   };
 
-  const handleDeleteClick = () => {
-    onDelete(widget.id);
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(widget);
   };
 
   // Prevent the drag-and-drop library from capturing the click

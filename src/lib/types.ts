@@ -27,10 +27,17 @@ export type WidgetType =
   | 'area'
   | 'scatter';
 
+export type KpiDataFormat = 'Number' | 'Currency' | 'Percentage';
+
 export type KpiConfig = {
+  title: string;
+  description?: string;
   metric: keyof CustomerOrder | undefined;
   aggregation: 'sum' | 'average' | 'count' | undefined;
-  title: string;
+  dataFormat: KpiDataFormat | undefined;
+  decimalPrecision?: number;
+  w?: number;
+  h?: number;
 };
 
 export type ChartConfig = {

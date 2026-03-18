@@ -24,6 +24,7 @@ import {
   Save,
   Settings,
   X,
+  Trash2,
   Package,
   DollarSign,
   Users,
@@ -62,7 +63,6 @@ export function Dashboard() {
     if (savedLayout) {
       setLayout(JSON.parse(savedLayout));
     } else {
-      // If no layout, enter config mode
       setIsConfigMode(true);
     }
   }, []);
@@ -79,12 +79,12 @@ export function Dashboard() {
 
   const startAddingWidget = (type: WidgetType) => {
     const tempWidget: DashboardWidget = {
-      id: `new-widget-${Date.now()}`, // Temporary ID
+      id: `new-widget-${Date.now()}`,
       type,
       x: 0,
       y: 0,
-      w: 0,
-      h: 0,
+      w: 4, 
+      h: 4, 
       config: { title: `New ${type} Widget` } as any,
     };
     setConfiguringWidget(tempWidget);
@@ -98,16 +98,12 @@ export function Dashboard() {
     return bottomMostWidget.y + bottomMostWidget.h;
   };
 
-  const deleteWidget = (widgetId: string) => {
-    setLayout(prev => ({
-      ...prev,
-      widgets: prev.widgets.filter(w => w.id !== widgetId),
-    }));
-  };
-
   const handleConfirmDelete = () => {
     if (deletingWidget) {
-      deleteWidget(deletingWidget.id);
+      setLayout(prev => ({
+        ...prev,
+        widgets: prev.widgets.filter(w => w.id !== deletingWidget.id),
+      }));
       setDeletingWidget(null);
       toast({
         variant: 'destructive',
@@ -119,7 +115,6 @@ export function Dashboard() {
 
   const updateWidgetConfig = (widgetId: string, newConfig: any) => {
     if (widgetId.startsWith('new-widget-')) {
-      // This is a new widget being created
       const type = configuringWidget?.type;
       if (!type) return;
 
@@ -128,8 +123,8 @@ export function Dashboard() {
         type,
         x: 0,
         y: findNextAvailableY(layout),
-        w: type === 'table' ? 12 : type === 'pie' ? 4 : 8,
-        h: 8,
+        w: newConfig.w || (type === 'table' ? 12 : type === 'pie' ? 4 : 8),
+        h: newConfig.h || 8,
         config: newConfig,
       };
       setLayout(prev => ({ ...prev, widgets: [...prev.widgets, newWidget] }));
@@ -139,11 +134,17 @@ export function Dashboard() {
         description: 'Your new widget has been added successfully!',
       });
     } else {
-      // This is an existing widget being updated
       setLayout(prev => ({
         ...prev,
         widgets: prev.widgets.map(w =>
-          w.id === widgetId ? { ...w, config: { ...w.config, ...newConfig } } : w
+          w.id === widgetId
+            ? {
+                ...w,
+                config: { ...w.config, ...newConfig },
+                w: newConfig.w || w.w,
+                h: newConfig.h || w.h,
+              }
+            : w
         ),
       }));
       toast({
@@ -208,10 +209,7 @@ export function Dashboard() {
                 <Save className="mr-2 h-4 w-4" />
                 Save
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => setIsConfigMode(false)}
-              >
+              <Button variant="outline" onClick={() => setIsConfigMode(false)}>
                 <X className="mr-2 h-4 w-4" />
                 Cancel
               </Button>
@@ -273,12 +271,22 @@ export function Dashboard() {
               </div>
             </div>
           )}
-
           <PendingOrders orders={filteredOrders} />
         </main>
       </div>
       <ConfigSheet
-        widget={configuringWidget}
+        widget={
+          configuringWidget
+            ? {
+                ...configuringWidget,
+                config: {
+                  ...configuringWidget.config,
+                  w: configuringWidget.w,
+                  h: configuringWidget.h,
+                },
+              }
+            : null
+        }
         onClose={() => setConfiguringWidget(null)}
         onSave={updateWidgetConfig}
       />

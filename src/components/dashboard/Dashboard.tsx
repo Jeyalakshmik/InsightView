@@ -116,7 +116,7 @@ export function Dashboard() {
         ...prev,
         widgets: prev.widgets.map(w =>
           w.id === widgetId
-            ? { ...w, config: { ...w.config, ...newConfig } }
+            ? { ...w, config: newConfig }
             : w
         ),
       }));

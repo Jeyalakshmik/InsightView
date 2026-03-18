@@ -69,14 +69,18 @@ export function ConfigSheet({ widget, onClose, onSave }: ConfigSheetProps) {
 
   return (
     <Sheet open={!!widget} onOpenChange={onClose}>
-      <SheetContent>
+      <SheetContent className="flex flex-col">
         <SheetHeader>
           <SheetTitle>Configure Widget</SheetTitle>
           <SheetDescription>
             Customize the settings for your widget.
           </SheetDescription>
         </SheetHeader>
-        <div className="py-4">{renderConfigurator()}</div>
+        <div className="py-4 flex-1 overflow-y-auto">
+          <div className="pr-6">
+            {renderConfigurator()}
+          </div>
+        </div>
       </SheetContent>
     </Sheet>
   );

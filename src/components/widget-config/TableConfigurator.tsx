@@ -7,12 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -138,14 +136,13 @@ export function TableConfigurator({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
-        <Tabs defaultValue="data" className="flex-1 flex flex-col">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Tabs defaultValue="data">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="data">Data</TabsTrigger>
             <TabsTrigger value="styling">Styling</TabsTrigger>
           </TabsList>
-          <ScrollArea className="flex-1 mt-4 pr-4">
-            <TabsContent value="data" className="space-y-4">
+          <TabsContent value="data" className="mt-4 space-y-4">
               <FormField
                 control={form.control}
                 name="title"
@@ -306,7 +303,7 @@ export function TableConfigurator({
                 )}
               </fieldset>
             </TabsContent>
-            <TabsContent value="styling" className="space-y-4">
+            <TabsContent value="styling" className="mt-4 space-y-4">
               <FormField control={form.control} name="fontSize" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Font size (px)</FormLabel>
@@ -324,9 +321,8 @@ export function TableConfigurator({
                 )}
               />
             </TabsContent>
-          </ScrollArea>
         </Tabs>
-        <div className="flex justify-end gap-2 pt-4 mt-auto">
+        <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>

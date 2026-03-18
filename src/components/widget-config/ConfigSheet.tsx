@@ -5,9 +5,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetFooter,
 } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
 import type { DashboardWidget } from '@/lib/types';
 import { KpiConfigurator } from './KpiConfigurator';
 import { ChartConfigurator } from './ChartConfigurator';

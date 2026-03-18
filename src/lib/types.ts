@@ -64,7 +64,6 @@ export interface TableFilter {
 export interface TableConfig extends BaseWidgetConfig {
   columns: (keyof CustomerOrder)[];
   rowsPerPage: 5 | 10 | 15;
-  sort?: string;
   sortBy?: keyof CustomerOrder;
   sortDirection?: 'asc' | 'desc';
   applyFilters?: boolean;

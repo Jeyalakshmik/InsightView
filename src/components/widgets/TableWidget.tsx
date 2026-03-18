@@ -24,7 +24,8 @@ export function TableWidget({ orders, config }: TableWidgetProps) {
   const { 
       columns = DEFAULT_COLUMNS,
       rowsPerPage = 5,
-      sort,
+      sortBy,
+      sortDirection,
       applyFilters,
       filters,
       fontSize = 14,
@@ -63,32 +64,29 @@ export function TableWidget({ orders, config }: TableWidgetProps) {
       });
     }
 
-    if (sort) {
-      const [sortBy, sortDirection] = sort.split('-') as [keyof CustomerOrder, 'asc' | 'desc'];
-      if (sortBy && sortDirection) {
-        processed.sort((a, b) => {
-          const valA = a[sortBy];
-          const valB = b[sortBy];
+    if (sortBy && sortDirection) {
+      processed.sort((a, b) => {
+        const valA = a[sortBy];
+        const valB = b[sortBy];
 
-          if (valA === null || valA === undefined) return 1;
-          if (valB === null || valB === undefined) return -1;
-          
-          let comparison = 0;
-          if (typeof valA === 'string' && typeof valB === 'string') {
-            comparison = valA.localeCompare(valB);
-          } else if (valA > valB) {
-            comparison = 1;
-          } else if (valA < valB) {
-            comparison = -1;
-          }
+        if (valA === null || valA === undefined) return 1;
+        if (valB === null || valB === undefined) return -1;
+        
+        let comparison = 0;
+        if (typeof valA === 'string' && typeof valB === 'string') {
+          comparison = valA.localeCompare(valB);
+        } else if (valA > valB) {
+          comparison = 1;
+        } else if (valA < valB) {
+          comparison = -1;
+        }
 
-          return sortDirection === 'asc' ? comparison : -comparison;
-        });
-      }
+        return sortDirection === 'asc' ? comparison : -comparison;
+      });
     }
 
     return processed;
-  }, [orders, applyFilters, filters, sort]);
+  }, [orders, applyFilters, filters, sortBy, sortDirection]);
 
   const paginatedOrders = useMemo(() => {
     const startIndex = (currentPage - 1) * rowsPerPage;

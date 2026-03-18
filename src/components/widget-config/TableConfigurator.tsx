@@ -60,7 +60,8 @@ const tableConfigSchema = z.object({
   h: z.coerce.number().int().min(1, 'Height must be at least 1'),
   columns: z.array(z.string()).min(1, 'Please select at least one column'),
   rowsPerPage: z.coerce.number(),
-  sort: z.string().optional(),
+  sortBy: z.string().optional(),
+  sortDirection: z.string().optional(),
   applyFilters: z.boolean().optional(),
   filters: z.array(z.object({
     attribute: z.string().min(1, "Required"),
@@ -79,7 +80,6 @@ export function TableConfigurator({
   onClose,
 }: TableConfiguratorProps) {
   const config = widget.config as TableConfig;
-  const initialSort = config.sort || (config.sortBy && config.sortDirection ? `${config.sortBy}-${config.sortDirection}` : '');
 
   const form = useForm<TableFormValues>({
     resolver: zodResolver(tableConfigSchema),
@@ -90,7 +90,8 @@ export function TableConfigurator({
       h: widget.h,
       columns: config.columns || [],
       rowsPerPage: config.rowsPerPage || 5,
-      sort: initialSort,
+      sortBy: config.sortBy,
+      sortDirection: config.sortDirection,
       applyFilters: config.applyFilters || false,
       filters: config.filters || [],
       fontSize: config.fontSize || 14,
@@ -108,7 +109,6 @@ export function TableConfigurator({
 
   useEffect(() => {
     const config = widget.config as TableConfig;
-    const initialSort = config.sort || (config.sortBy && config.sortDirection ? `${config.sortBy}-${config.sortDirection}` : '');
     form.reset({
       title: config.title || 'Untitled',
       description: config.description || '',
@@ -116,7 +116,8 @@ export function TableConfigurator({
       h: widget.h,
       columns: config.columns || [],
       rowsPerPage: config.rowsPerPage || 5,
-      sort: initialSort,
+      sortBy: config.sortBy,
+      sortDirection: config.sortDirection,
       applyFilters: config.applyFilters || false,
       filters: config.filters || [],
       fontSize: config.fontSize || 14,
@@ -130,6 +131,8 @@ export function TableConfigurator({
       columns: values.columns as (keyof CustomerOrder)[],
       rowsPerPage: values.rowsPerPage as 5 | 10 | 15,
       filters: values.filters as any,
+      sortBy: values.sortBy as keyof CustomerOrder,
+      sortDirection: values.sortDirection as 'asc' | 'desc',
     };
     onSave(widget.id, newConfig);
     onClose();
@@ -142,8 +145,8 @@ export function TableConfigurator({
       <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col">
         <Tabs defaultValue="data" className="flex-1 flex flex-col">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="data">Data</TabsTrigger>
-            <TabsTrigger value="styling">Styling</TabsTrigger>
+            <TabsTrigger value="data" className="data-[state=active]:bg-primary/80">Data</TabsTrigger>
+            <TabsTrigger value="styling" className="data-[state=active]:bg-primary/80">Styling</TabsTrigger>
           </TabsList>
           <ScrollArea className="flex-1">
             <div className="pr-6">
@@ -240,23 +243,64 @@ export function TableConfigurator({
                         </FormItem>
                       )}
                     />
-                     <FormField control={form.control} name="sort" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Sort by</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl><SelectTrigger><SelectValue placeholder="Select sort option" /></SelectTrigger></FormControl>
-                                <SelectContent>
-                                    {watchColumns.flatMap(c => {
-                                        const columnLabel = (COLUMN_OPTIONS.find(o => o.value === c) || {label: c}).label;
-                                        return [
-                                            <SelectItem key={`${c}-asc`} value={`${c}-asc`}>{`${columnLabel} (Ascending)`}</SelectItem>,
-                                            <SelectItem key={`${c}-desc`} value={`${c}-desc`}>{`${columnLabel} (Descending)`}</SelectItem>
-                                        ]
-                                    })}
-                                </SelectContent>
-                            </Select>
-                        </FormItem>
-                    )} />
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="sortBy"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Sort by</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select column" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {watchColumns.map(c => {
+                                                const columnLabel = (
+                                                    COLUMN_OPTIONS.find(o => o.value === c) || {
+                                                        label: c,
+                                                    }
+                                                ).label;
+                                                return (
+                                                    <SelectItem key={c} value={c}>
+                                                        {columnLabel}
+                                                    </SelectItem>
+                                                );
+                                            })}
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="sortDirection"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>&nbsp;</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Direction" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="asc">Ascending</SelectItem>
+                                            <SelectItem value="desc">Descending</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
 
                     <FormField control={form.control} name="rowsPerPage" render={({ field }) => (
                         <FormItem className="space-y-3">

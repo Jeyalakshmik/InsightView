@@ -47,7 +47,7 @@ export async function summarizeOrderTrends(input: AiOrderTrendSummarizerInput): 
 
 const prompt = ai.definePrompt({
   name: 'aiOrderTrendSummarizerPrompt',
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-1.5-flash',
   input: {
     schema: AiOrderTrendSummarizerInputSchema,
   },

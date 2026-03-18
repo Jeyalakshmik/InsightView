@@ -47,10 +47,12 @@ export interface ChartConfig extends BaseWidgetConfig {
   xAxis: keyof CustomerOrder | undefined;
   yAxis: keyof CustomerOrder | undefined;
   color?: string;
+  showLabel?: boolean;
 }
 
 export interface PieChartConfig extends BaseWidgetConfig {
   dataKey: keyof CustomerOrder | undefined;
+  showLabel?: boolean;
 }
 
 export type TableFilterOperator = '=' | '!=' | '>' | '>=' | '<' | '<=' | 'contains';

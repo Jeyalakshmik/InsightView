@@ -16,11 +16,13 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Checkbox } from '@/components/ui/checkbox';
 import type {
   DashboardWidget,
   PieChartConfig,
@@ -46,6 +48,7 @@ const pieChartConfigSchema = z.object({
   w: z.coerce.number().int().min(1, 'Width must be at least 1'),
   h: z.coerce.number().int().min(1, 'Height must be at least 1'),
   dataKey: z.string().min(1, 'Please select a data field'),
+  showLabel: z.boolean().optional(),
 });
 
 type PieChartFormValues = z.infer<typeof pieChartConfigSchema>;
@@ -63,6 +66,7 @@ export function PieChartConfigurator({
       w: widget.w,
       h: widget.h,
       dataKey: (widget.config as PieChartConfig).dataKey || '',
+      showLabel: (widget.config as PieChartConfig).showLabel ?? true,
     },
   });
 
@@ -73,6 +77,7 @@ export function PieChartConfigurator({
       w: widget.w,
       h: widget.h,
       dataKey: (widget.config as PieChartConfig).dataKey || '',
+      showLabel: (widget.config as PieChartConfig).showLabel ?? true,
     });
   }, [widget, form]);
 
@@ -182,6 +187,29 @@ export function PieChartConfigurator({
             )}
           />
         </fieldset>
+        
+        <FormField
+          control={form.control}
+          name="showLabel"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>
+                  Show Labels
+                </FormLabel>
+                <FormDescription>
+                  Display labels on the pie chart slices.
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
 
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onClose}>

@@ -119,6 +119,7 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
   const renderChart = () => {
     const chartConfig = config as ChartConfig;
     const pieConfig = config as PieChartConfig;
+    const showLabels = (config as ChartConfig).showLabel ?? true;
 
     switch (type) {
       case 'bar':
@@ -126,10 +127,10 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
           <BarChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={chartConfig.xAxis}>
-              <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />
+              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />}
             </XAxis>
             <YAxis>
-              <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />}
             </YAxis>
             <Tooltip />
             <Legend />
@@ -141,10 +142,10 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
           <LineChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={chartConfig.xAxis}>
-              <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />
+              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />}
             </XAxis>
             <YAxis>
-              <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />}
             </YAxis>
             <Tooltip />
             <Legend />
@@ -156,10 +157,10 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
           <AreaChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={chartConfig.xAxis}>
-              <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />
+              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />}
             </XAxis>
             <YAxis>
-              <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />}
             </YAxis>
             <Tooltip />
             <Legend />
@@ -174,10 +175,10 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
           <ScatterChart margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
             <CartesianGrid />
             <XAxis type={xAxisType} dataKey={chartConfig.xAxis} name={chartConfig.xAxis}>
-              <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />
+              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />}
             </XAxis>
             <YAxis type={yAxisType} dataKey={chartConfig.yAxis} name={chartConfig.yAxis}>
-              <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
+              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />}
             </YAxis>
             <Tooltip cursor={{ strokeDasharray: '3 3' }} />
             <Scatter name="Orders" data={data} fill={chartConfig.color || COLORS[0]} />
@@ -185,9 +186,10 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
         );
       }
       case 'pie':
+        const showPieLabels = (pieConfig).showLabel ?? true;
         return (
           <PieChart>
-            <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#8884d8" label>
+            <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#8884d8" label={showPieLabels}>
                 {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}

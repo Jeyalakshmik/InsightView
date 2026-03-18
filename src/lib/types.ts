@@ -29,36 +29,40 @@ export type WidgetType =
 
 export type KpiDataFormat = 'Number' | 'Currency' | 'Percentage';
 
-export type KpiConfig = {
+export interface BaseWidgetConfig {
   title: string;
   description?: string;
+  w?: number;
+  h?: number;
+}
+
+export interface KpiConfig extends BaseWidgetConfig {
   metric: keyof CustomerOrder | undefined;
   aggregation: 'sum' | 'average' | 'count' | undefined;
   dataFormat: KpiDataFormat | undefined;
   decimalPrecision?: number;
-  w?: number;
-  h?: number;
-};
+}
 
-export type ChartConfig = {
+export interface ChartConfig extends BaseWidgetConfig {
   xAxis: keyof CustomerOrder | undefined;
   yAxis: keyof CustomerOrder | undefined;
-  title: string;
-  color: string;
-};
+  color?: string;
+}
 
-export type PieChartConfig = {
+export interface PieChartConfig extends BaseWidgetConfig {
   dataKey: keyof CustomerOrder | undefined;
-  title: string;
-};
+}
 
-export type TableConfig = {
+export interface TableConfig extends BaseWidgetConfig {
   columns: (keyof CustomerOrder)[];
-  title: string;
   rowsPerPage: 5 | 10 | 15;
-};
+}
 
-export type WidgetConfig = KpiConfig | ChartConfig | PieChartConfig | TableConfig;
+export type WidgetConfig =
+  | KpiConfig
+  | ChartConfig
+  | PieChartConfig
+  | TableConfig;
 
 export interface DashboardWidget {
   id: string;
@@ -74,4 +78,9 @@ export type DashboardLayout = {
   widgets: DashboardWidget[];
 };
 
-export type DateFilter = 'All Time' | 'Today' | 'Last 7 Days' | 'Last 30 Days' | 'Last 90 Days';
+export type DateFilter =
+  | 'All Time'
+  | 'Today'
+  | 'Last 7 Days'
+  | 'Last 30 Days'
+  | 'Last 90 Days';

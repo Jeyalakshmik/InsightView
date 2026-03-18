@@ -19,6 +19,7 @@ import type {
   DashboardWidget,
   DateFilter,
   WidgetType,
+  WidgetConfig,
 } from '@/lib/types';
 import {
   Save,
@@ -35,6 +36,7 @@ import { useToast } from '@/hooks/use-toast';
 import { StatCard } from './StatCard';
 import { PendingOrders } from './PendingOrders';
 import { DeleteWidgetDialog } from './DeleteWidgetDialog';
+import { ClearDataDialog } from './ClearDataDialog';
 
 const defaultLayout: DashboardLayout = { widgets: [] };
 const DATE_FILTERS: DateFilter[] = [
@@ -46,7 +48,7 @@ const DATE_FILTERS: DateFilter[] = [
 ];
 
 export function Dashboard() {
-  const { orders } = useData();
+  const { orders, clearAllOrders } = useData();
   const [layout, setLayout] = useState<DashboardLayout>(defaultLayout);
   const [isConfigMode, setIsConfigMode] = useState(false);
   const [dateFilter, setDateFilter] = useState<DateFilter>('All Time');
@@ -54,6 +56,7 @@ export function Dashboard() {
     useState<DashboardWidget | null>(null);
   const [deletingWidget, setDeletingWidget] =
     useState<DashboardWidget | null>(null);
+  const [isClearDataDialogOpen, setIsClearDataDialogOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
 
@@ -83,10 +86,25 @@ export function Dashboard() {
       type,
       x: 0,
       y: 0,
-      w: type === 'kpi' ? 2 : 4,
-      h: type === 'kpi' ? 2 : 4,
+      w: 4,
+      h: 8,
       config: { title: `New ${type} Widget` } as any,
     };
+
+    if (type === 'kpi') {
+      tempWidget.w = 2;
+      tempWidget.h = 2;
+    } else if (type === 'table') {
+      tempWidget.w = 12;
+      tempWidget.h = 8;
+    } else if (type === 'pie') {
+      tempWidget.w = 4;
+      tempWidget.h = 8;
+    } else {
+      tempWidget.w = 6;
+      tempWidget.h = 8;
+    }
+
     setConfiguringWidget(tempWidget);
   };
 
@@ -113,7 +131,7 @@ export function Dashboard() {
     }
   };
 
-  const updateWidgetConfig = (widgetId: string, newConfig: any) => {
+  const updateWidgetConfig = (widgetId: string, newConfig: WidgetConfig) => {
     if (widgetId.startsWith('new-widget-')) {
       const type = configuringWidget?.type;
       if (!type) return;
@@ -123,8 +141,8 @@ export function Dashboard() {
         type,
         x: 0,
         y: findNextAvailableY(layout),
-        w: newConfig.w || (type === 'table' ? 12 : type === 'pie' ? 4 : 8),
-        h: newConfig.h || 8,
+        w: newConfig.w!,
+        h: newConfig.h!,
         config: newConfig,
       };
       setLayout(prev => ({ ...prev, widgets: [...prev.widgets, newWidget] }));
@@ -140,9 +158,9 @@ export function Dashboard() {
           w.id === widgetId
             ? {
                 ...w,
-                config: { ...w.config, ...newConfig },
-                w: newConfig.w || w.w,
-                h: newConfig.h || w.h,
+                config: newConfig,
+                w: newConfig.w!,
+                h: newConfig.h!,
               }
             : w
         ),
@@ -153,10 +171,23 @@ export function Dashboard() {
         description: 'Your changes have been saved successfully!',
       });
     }
+    setConfiguringWidget(null);
   };
 
   const handleLayoutChange = (newWidgets: DashboardWidget[]) => {
     setLayout({ widgets: newWidgets });
+  };
+
+  const handleClearData = () => {
+    clearAllOrders();
+    setLayout(defaultLayout);
+    localStorage.removeItem('dashboardLayout');
+    setIsClearDataDialogOpen(false);
+    toast({
+      variant: 'destructive',
+      title: 'Data Cleared',
+      description: 'All orders and dashboard layout have been reset.',
+    });
   };
 
   const filteredOrders = filterOrdersByDate(orders, dateFilter);
@@ -223,7 +254,12 @@ export function Dashboard() {
         </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
-        {isConfigMode && <WidgetPalette onAddWidget={startAddingWidget} />}
+        {isConfigMode && (
+          <WidgetPalette
+            onAddWidget={startAddingWidget}
+            onClear={() => setIsClearDataDialogOpen(true)}
+          />
+        )}
         <main className="flex-1 space-y-4 overflow-y-auto p-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard
@@ -275,18 +311,7 @@ export function Dashboard() {
         </main>
       </div>
       <ConfigSheet
-        widget={
-          configuringWidget
-            ? {
-                ...configuringWidget,
-                config: {
-                  ...configuringWidget.config,
-                  w: configuringWidget.w,
-                  h: configuringWidget.h,
-                },
-              }
-            : null
-        }
+        widget={configuringWidget}
         onClose={() => setConfiguringWidget(null)}
         onSave={updateWidgetConfig}
       />
@@ -298,6 +323,11 @@ export function Dashboard() {
           onConfirm={handleConfirmDelete}
         />
       )}
+      <ClearDataDialog
+        isOpen={isClearDataDialogOpen}
+        onClose={() => setIsClearDataDialogOpen(false)}
+        onConfirm={handleClearData}
+      />
     </div>
   );
 }

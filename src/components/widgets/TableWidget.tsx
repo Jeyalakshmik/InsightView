@@ -21,18 +21,91 @@ const DEFAULT_COLUMNS: (keyof CustomerOrder)[] = ['id', 'firstName', 'product', 
 
 export function TableWidget({ orders, config }: TableWidgetProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const { columns = DEFAULT_COLUMNS, rowsPerPage = 5 } = config;
+  const { 
+      columns = DEFAULT_COLUMNS,
+      rowsPerPage = 5,
+      sortBy,
+      sortDirection,
+      applyFilters,
+      filters,
+      fontSize = 14,
+      headerBackgroundColor
+  } = config;
+
+  const processedOrders = useMemo(() => {
+    let processed = [...orders];
+
+    if (applyFilters && filters && filters.length > 0) {
+      processed = processed.filter(order => {
+        return filters.every(filter => {
+          if (!filter.attribute || !filter.operator) return true;
+
+          const orderValue = order[filter.attribute];
+          const filterValue = filter.value;
+          
+          if (orderValue === undefined || orderValue === null) return false;
+
+          const valA = typeof orderValue === 'string' ? orderValue.toLowerCase() : orderValue;
+          const valB = typeof filterValue === 'string' ? filterValue.toLowerCase() : filterValue;
+
+          switch (filter.operator) {
+            case '=': return valA == valB;
+            case '!=': return valA != valB;
+            case '>': return valA > valB;
+            case '>=': return valA >= valB;
+            case '<': return valA < valB;
+            case '<=': return valA <= valB;
+            case 'contains':
+              return typeof valA === 'string' && typeof valB === 'string' ? valA.includes(valB) : false;
+            default:
+              return true;
+          }
+        });
+      });
+    }
+
+    if (sortBy && sortDirection) {
+      processed.sort((a, b) => {
+        const valA = a[sortBy];
+        const valB = b[sortBy];
+
+        if (valA === null || valA === undefined) return 1;
+        if (valB === null || valB === undefined) return -1;
+        
+        let comparison = 0;
+        if (typeof valA === 'string' && typeof valB === 'string') {
+          comparison = valA.localeCompare(valB);
+        } else if (valA > valB) {
+          comparison = 1;
+        } else if (valA < valB) {
+          comparison = -1;
+        }
+
+        return sortDirection === 'asc' ? comparison : -comparison;
+      });
+    }
+
+    return processed;
+  }, [orders, applyFilters, filters, sortBy, sortDirection]);
 
   const paginatedOrders = useMemo(() => {
     const startIndex = (currentPage - 1) * rowsPerPage;
-    return orders.slice(startIndex, startIndex + rowsPerPage);
-  }, [orders, currentPage, rowsPerPage]);
+    return processedOrders.slice(startIndex, startIndex + rowsPerPage);
+  }, [processedOrders, currentPage, rowsPerPage]);
 
-  const totalPages = Math.ceil(orders.length / rowsPerPage);
+  const totalPages = Math.ceil(processedOrders.length / rowsPerPage);
 
   const formatHeader = (key: string) => {
     return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
   }
+
+  const headerStyle = {
+    backgroundColor: headerBackgroundColor,
+    fontSize: `${fontSize}px`,
+  };
+  const cellStyle = {
+    fontSize: `${fontSize}px`,
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -41,7 +114,7 @@ export function TableWidget({ orders, config }: TableWidgetProps) {
         <TableHeader>
           <TableRow>
             {columns.map(key => (
-              <TableHead key={key}>{formatHeader(key)}</TableHead>
+              <TableHead key={key} style={headerStyle}>{formatHeader(key)}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -49,34 +122,36 @@ export function TableWidget({ orders, config }: TableWidgetProps) {
           {paginatedOrders.map(order => (
             <TableRow key={order.id}>
               {columns.map(key => (
-                <TableCell key={key}>{String(order[key])}</TableCell>
+                <TableCell key={key} style={cellStyle}>{String(order[key])}</TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </ScrollArea>
-    <div className="flex items-center justify-end space-x-2 py-4 mt-auto">
-        <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
-        </span>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </Button>
-      </div>
+    { totalPages > 1 &&
+      <div className="flex items-center justify-end space-x-2 py-4 mt-auto">
+          <span className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage >= totalPages}
+          >
+            Next
+          </Button>
+        </div>
+    }
     </div>
   );
 }

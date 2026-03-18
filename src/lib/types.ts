@@ -53,10 +53,25 @@ export interface PieChartConfig extends BaseWidgetConfig {
   dataKey: keyof CustomerOrder | undefined;
 }
 
+export type TableFilterOperator = '=' | '!=' | '>' | '>=' | '<' | '<=' | 'contains';
+
+export interface TableFilter {
+  attribute: keyof CustomerOrder;
+  operator: TableFilterOperator;
+  value: string | number;
+}
+
 export interface TableConfig extends BaseWidgetConfig {
   columns: (keyof CustomerOrder)[];
   rowsPerPage: 5 | 10 | 15;
+  sortBy?: keyof CustomerOrder;
+  sortDirection?: 'asc' | 'desc';
+  applyFilters?: boolean;
+  filters?: TableFilter[];
+  fontSize?: number;
+  headerBackgroundColor?: string;
 }
+
 
 export type WidgetConfig =
   | KpiConfig

@@ -20,9 +20,19 @@ import type {
   DateFilter,
   WidgetType,
 } from '@/lib/types';
-import { Save, Settings, X } from 'lucide-react';
+import {
+  Save,
+  Settings,
+  X,
+  Package,
+  DollarSign,
+  Users,
+  ShoppingCart,
+} from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useToast } from '@/hooks/use-toast';
+import { StatCard } from './StatCard';
+import { PendingOrders } from './PendingOrders';
 
 const defaultLayout: DashboardLayout = { widgets: [] };
 const DATE_FILTERS: DateFilter[] = [
@@ -103,7 +113,7 @@ export function Dashboard() {
         type,
         x: 0,
         y: findNextAvailableY(layout),
-        w: type === 'table' ? 12 : 4,
+        w: type === 'table' ? 12 : type === 'pie' ? 4 : 8,
         h: 8,
         config: newConfig,
       };
@@ -113,9 +123,7 @@ export function Dashboard() {
       setLayout(prev => ({
         ...prev,
         widgets: prev.widgets.map(w =>
-          w.id === widgetId
-            ? { ...w, config: newConfig }
-            : w
+          w.id === widgetId ? { ...w, config: { ...w.config, ...newConfig } } : w
         ),
       }));
     }
@@ -126,6 +134,24 @@ export function Dashboard() {
   };
 
   const filteredOrders = filterOrdersByDate(orders, dateFilter);
+
+  const totalOrders = filteredOrders.length;
+  const totalRevenue = filteredOrders.reduce(
+    (sum, order) => sum + order.totalAmount,
+    0
+  );
+  const totalCustomers = new Set(filteredOrders.map(o => o.email)).size;
+  const totalSoldQuantity = filteredOrders.reduce(
+    (sum, order) => sum + order.quantity,
+    0
+  );
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
 
   if (!isClient) return null;
 
@@ -175,9 +201,41 @@ export function Dashboard() {
       </header>
       <div className="flex flex-1 overflow-hidden">
         {isConfigMode && <WidgetPalette onAddWidget={startAddingWidget} />}
-        <main className="flex-1 overflow-y-auto p-4">
-          {layout.widgets.length === 0 ? (
-            <div className="flex h-full items-center justify-center rounded-lg border-2 border-dashed">
+        <main className="flex-1 space-y-4 overflow-y-auto p-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              title="Total Orders"
+              value={totalOrders}
+              icon={<Package className="h-4 w-4 text-muted-foreground" />}
+            />
+            <StatCard
+              title="Total Revenue"
+              value={formatCurrency(totalRevenue)}
+              icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+            />
+            <StatCard
+              title="Total Customers"
+              value={totalCustomers}
+              icon={<Users className="h-4 w-4 text-muted-foreground" />}
+            />
+            <StatCard
+              title="Total Sold Quantity"
+              value={totalSoldQuantity}
+              icon={<ShoppingCart className="h-4 w-4 text-muted-foreground" />}
+            />
+          </div>
+
+          {layout.widgets.length > 0 ? (
+            <DashboardGrid
+              widgets={layout.widgets}
+              onLayoutChange={handleLayoutChange}
+              onDelete={deleteWidget}
+              onConfigure={setConfiguringWidget}
+              isConfigMode={isConfigMode}
+              orders={filteredOrders}
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center rounded-lg border-2 border-dashed py-12">
               <div className="text-center">
                 <h2 className="text-xl font-semibold">
                   Your Dashboard is Empty
@@ -189,16 +247,9 @@ export function Dashboard() {
                 </p>
               </div>
             </div>
-          ) : (
-            <DashboardGrid
-              widgets={layout.widgets}
-              onLayoutChange={handleLayoutChange}
-              onDelete={deleteWidget}
-              onConfigure={setConfiguringWidget}
-              isConfigMode={isConfigMode}
-              orders={filteredOrders}
-            />
           )}
+
+          <PendingOrders orders={filteredOrders} />
         </main>
       </div>
       <ConfigSheet

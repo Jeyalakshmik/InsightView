@@ -124,46 +124,46 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
     switch (type) {
       case 'bar':
         return (
-          <BarChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
+          <BarChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={chartConfig.xAxis}>
-              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />}
+              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={0} position="insideBottom" />}
             </XAxis>
             <YAxis>
-              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />}
+              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} offset={-10} />}
             </YAxis>
             <Tooltip />
-            <Legend />
+            <Legend verticalAlign="top" wrapperStyle={{paddingBottom: '10px'}} />
             <Bar dataKey={chartConfig.yAxis} fill={chartConfig.color || COLORS[0]} />
           </BarChart>
         );
       case 'line':
         return (
-          <LineChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
+          <LineChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={chartConfig.xAxis}>
-              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />}
+              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={0} position="insideBottom" />}
             </XAxis>
             <YAxis>
-              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />}
+              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} offset={-10} />}
             </YAxis>
             <Tooltip />
-            <Legend />
+            <Legend verticalAlign="top" wrapperStyle={{paddingBottom: '10px'}} />
             <Line type="monotone" dataKey={chartConfig.yAxis} stroke={chartConfig.color || COLORS[0]} />
           </LineChart>
         );
       case 'area':
         return (
-          <AreaChart data={data} margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
+          <AreaChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={chartConfig.xAxis}>
-              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />}
+              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={0} position="insideBottom" />}
             </XAxis>
             <YAxis>
-              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />}
+              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} offset={-10} />}
             </YAxis>
             <Tooltip />
-            <Legend />
+            <Legend verticalAlign="top" wrapperStyle={{paddingBottom: '10px'}} />
             <Area type="monotone" dataKey={chartConfig.yAxis} fill={chartConfig.color || COLORS[0]} stroke={chartConfig.color || COLORS[0]}/>
           </AreaChart>
         );
@@ -172,15 +172,16 @@ export function ChartWidget({ orders, type, config }: ChartWidgetProps) {
         const xAxisType = numericKeys.includes(chartConfig.xAxis || '') ? 'number' : 'category';
         const yAxisType = numericKeys.includes(chartConfig.yAxis || '') ? 'number' : 'category';
         return (
-          <ScatterChart margin={{ top: 5, right: 20, left: 20, bottom: 20 }}>
+          <ScatterChart margin={{ top: 20, right: 20, left: 20, bottom: 5 }}>
             <CartesianGrid />
             <XAxis type={xAxisType} dataKey={chartConfig.xAxis} name={chartConfig.xAxis}>
-              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={-10} position="insideBottom" />}
+              {showLabels && <Label value={formatAxisLabel(chartConfig.xAxis)} offset={0} position="insideBottom" />}
             </XAxis>
             <YAxis type={yAxisType} dataKey={chartConfig.yAxis} name={chartConfig.yAxis}>
-              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />}
+              {showLabels && <Label value={formatAxisLabel(chartConfig.yAxis)} angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} offset={-10} />}
             </YAxis>
             <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+            <Legend verticalAlign="top" wrapperStyle={{paddingBottom: '10px'}} />
             <Scatter name="Orders" data={data} fill={chartConfig.color || COLORS[0]} />
           </ScatterChart>
         );

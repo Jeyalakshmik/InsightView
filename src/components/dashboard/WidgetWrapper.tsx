@@ -19,6 +19,16 @@ export function WidgetWrapper({
   onConfigure,
   isConfigMode,
 }: WidgetWrapperProps) {
+  const handleConfigureClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onConfigure(widget);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete(widget.id);
+  };
+
   return (
     <div className="h-full">
       <Card className="group flex h-full w-full flex-col transition-all duration-200 ease-in-out hover:shadow-lg hover:scale-[1.01]">
@@ -41,7 +51,7 @@ export function WidgetWrapper({
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 cursor-pointer"
-                onClick={() => onConfigure(widget)}
+                onClick={handleConfigureClick}
               >
                 <Settings className="h-4 w-4" />
               </Button>
@@ -49,7 +59,7 @@ export function WidgetWrapper({
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 cursor-pointer text-destructive hover:text-destructive"
-                onClick={() => onDelete(widget.id)}
+                onClick={handleDeleteClick}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

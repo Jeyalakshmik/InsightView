@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -17,7 +16,6 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -37,6 +35,12 @@ interface KpiConfiguratorProps {
 }
 
 const METRIC_OPTIONS: (keyof CustomerOrder)[] = [
+  'id',
+  'email',
+  'country',
+  'product',
+  'status',
+  'createdBy',
   'quantity',
   'unitPrice',
   'totalAmount',
@@ -56,7 +60,11 @@ const kpiConfigSchema = z.object({
   metric: z.string().min(1, 'Please select a metric'),
   aggregation: z.string().min(1, 'Please select an aggregation'),
   dataFormat: z.string().min(1, 'Please select a format'),
-  decimalPrecision: z.coerce.number().int().min(0, 'Cannot be negative'),
+  decimalPrecision: z.coerce
+    .number()
+    .int()
+    .min(0, 'Cannot be negative')
+    .max(5, 'Cannot be more than 5'),
 });
 
 type KpiFormValues = z.infer<typeof kpiConfigSchema>;
@@ -69,27 +77,27 @@ export function KpiConfigurator({
   const form = useForm<KpiFormValues>({
     resolver: zodResolver(kpiConfigSchema),
     defaultValues: {
-      title: widget.config.title || '',
+      title: (widget.config as KpiConfig).title || 'Untitled',
       description: (widget.config as KpiConfig).description || '',
-      w: widget.w,
-      h: widget.h,
+      w: widget.w || 2,
+      h: widget.h || 2,
       metric: (widget.config as KpiConfig).metric || '',
       aggregation: (widget.config as KpiConfig).aggregation || '',
       dataFormat: (widget.config as KpiConfig).dataFormat || 'Number',
-      decimalPrecision: (widget.config as KpiConfig).decimalPrecision || 0,
+      decimalPrecision: (widget.config as KpiConfig).decimalPrecision ?? 0,
     },
   });
 
   useEffect(() => {
     form.reset({
-      title: widget.config.title || '',
+      title: (widget.config as KpiConfig).title || 'Untitled',
       description: (widget.config as KpiConfig).description || '',
-      w: widget.w,
-      h: widget.h,
+      w: widget.w || 2,
+      h: widget.h || 2,
       metric: (widget.config as KpiConfig).metric || '',
       aggregation: (widget.config as KpiConfig).aggregation || '',
       dataFormat: (widget.config as KpiConfig).dataFormat || 'Number',
-      decimalPrecision: (widget.config as KpiConfig).decimalPrecision || 0,
+      decimalPrecision: (widget.config as KpiConfig).decimalPrecision ?? 0,
     });
   }, [widget, form]);
 
@@ -135,7 +143,10 @@ export function KpiConfigurator({
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="A brief description of the widget." {...field} />
+                <Textarea
+                  placeholder="A brief description of the widget."
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -264,7 +275,7 @@ export function KpiConfigurator({
               <FormItem>
                 <FormLabel>Decimal Precision *</FormLabel>
                 <FormControl>
-                  <Input type="number" min="0" max="10" {...field} />
+                  <Input type="number" min="0" max="5" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -276,7 +287,7 @@ export function KpiConfigurator({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit">{isCreating ? 'Add Widget' : 'Save'}</Button>
+          <Button type="submit">{isCreating ? 'Add' : 'Save'}</Button>
         </div>
       </form>
     </Form>

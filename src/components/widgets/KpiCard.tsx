@@ -1,7 +1,6 @@
 'use client';
 import { useMemo } from 'react';
 import type { CustomerOrder, KpiConfig } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface KpiCardProps {
   orders: CustomerOrder[];
@@ -13,18 +12,23 @@ export function KpiCard({ orders, config }: KpiCardProps) {
     if (!config.metric || !config.aggregation) return null;
     if (orders.length === 0) return 0;
 
+    if (config.aggregation === 'count') {
+      const uniqueValues = new Set(
+        orders.map(o => o[config.metric as keyof CustomerOrder])
+      );
+      return uniqueValues.size;
+    }
+
     const values = orders
       .map(order => order[config.metric as keyof CustomerOrder])
       .filter(v => typeof v === 'number') as number[];
 
+    if (values.length === 0) return 0;
+
     switch (config.aggregation) {
-      case 'count':
-        return orders.length;
       case 'sum':
-        if (values.length === 0) return 0;
         return values.reduce((acc, val) => acc + val, 0);
       case 'average':
-        if (values.length === 0) return 0;
         return values.reduce((acc, val) => acc + val, 0) / values.length;
       default:
         return null;

@@ -83,8 +83,8 @@ export function Dashboard() {
       type,
       x: 0,
       y: 0,
-      w: 4, 
-      h: 4, 
+      w: type === 'kpi' ? 2 : 4,
+      h: type === 'kpi' ? 2 : 4,
       config: { title: `New ${type} Widget` } as any,
     };
     setConfiguringWidget(tempWidget);

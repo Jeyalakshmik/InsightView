@@ -20,9 +20,8 @@ import type {
   DateFilter,
   WidgetType,
 } from '@/lib/types';
-import { Save, Settings, X, Trash2 } from 'lucide-react';
+import { Save, Settings, X } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
-import { ClearDataDialog } from './ClearDataDialog';
 import { useToast } from '@/hooks/use-toast';
 
 const defaultLayout: DashboardLayout = { widgets: [] };
@@ -35,14 +34,13 @@ const DATE_FILTERS: DateFilter[] = [
 ];
 
 export function Dashboard() {
-  const { orders, clearAllOrders } = useData();
+  const { orders } = useData();
   const [layout, setLayout] = useState<DashboardLayout>(defaultLayout);
   const [isConfigMode, setIsConfigMode] = useState(false);
   const [dateFilter, setDateFilter] = useState<DateFilter>('All Time');
   const [configuringWidget, setConfiguringWidget] =
     useState<DashboardWidget | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const [isClearDataOpen, setIsClearDataOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -127,18 +125,6 @@ export function Dashboard() {
     setLayout({ widgets: newWidgets });
   };
 
-  const handleClearData = () => {
-    clearAllOrders();
-    setLayout({ widgets: [] });
-    localStorage.removeItem('dashboardLayout');
-    setIsClearDataOpen(false);
-    toast({
-      title: 'All Data Cleared',
-      description: 'All order data and dashboard widgets have been removed.',
-      variant: 'destructive',
-    });
-  };
-
   const filteredOrders = filterOrdersByDate(orders, dateFilter);
 
   if (!isClient) return null;
@@ -167,13 +153,6 @@ export function Dashboard() {
           <ThemeToggle />
           {isConfigMode ? (
             <>
-              <Button
-                variant="destructive"
-                onClick={() => setIsClearDataOpen(true)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Clear Data
-              </Button>
               <Button onClick={saveLayout}>
                 <Save className="mr-2 h-4 w-4" />
                 Save
@@ -226,11 +205,6 @@ export function Dashboard() {
         widget={configuringWidget}
         onClose={() => setConfiguringWidget(null)}
         onSave={updateWidgetConfig}
-      />
-      <ClearDataDialog
-        isOpen={isClearDataOpen}
-        onClose={() => setIsClearDataOpen(false)}
-        onConfirm={handleClearData}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -32,10 +32,6 @@ const COLORS = ['#2268CC', '#1CBFDB', '#8884d8', '#82ca9d', '#ffc658'];
 
 export function ChartConfigurator({ widget, onSave, onClose }: ChartConfiguratorProps) {
   const [config, setConfig] = useState(widget.config as ChartConfig);
-
-  useEffect(() => {
-    setConfig(widget.config as ChartConfig);
-  }, [widget]);
 
   const handleSave = () => {
     onSave(widget.id, config);

@@ -19,14 +19,17 @@ export function WidgetWrapper({
   onConfigure,
   isConfigMode,
 }: WidgetWrapperProps) {
-  const handleConfigureClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleConfigureClick = () => {
     onConfigure(widget);
   };
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDeleteClick = () => {
     onDelete(widget.id);
+  };
+
+  // Prevent the drag-and-drop library from capturing the click
+  const stopEventPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   return (
@@ -51,6 +54,7 @@ export function WidgetWrapper({
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 cursor-pointer"
+                onMouseDown={stopEventPropagation}
                 onClick={handleConfigureClick}
               >
                 <Settings className="h-4 w-4" />
@@ -59,6 +63,7 @@ export function WidgetWrapper({
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 cursor-pointer text-destructive hover:text-destructive"
+                onMouseDown={stopEventPropagation}
                 onClick={handleDeleteClick}
               >
                 <Trash2 className="h-4 w-4" />

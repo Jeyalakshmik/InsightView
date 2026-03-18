@@ -27,22 +27,42 @@ export function ConfigSheet({ widget, onClose, onSave }: ConfigSheetProps) {
     switch (widget.type) {
       case 'kpi':
         return (
-          <KpiConfigurator widget={widget} onSave={onSave} onClose={onClose} />
+          <KpiConfigurator
+            key={widget.id}
+            widget={widget}
+            onSave={onSave}
+            onClose={onClose}
+          />
         );
       case 'bar':
       case 'line':
       case 'area':
       case 'scatter':
         return (
-          <ChartConfigurator widget={widget} onSave={onSave} onClose={onClose} />
+          <ChartConfigurator
+            key={widget.id}
+            widget={widget}
+            onSave={onSave}
+            onClose={onClose}
+          />
         );
       case 'pie':
         return (
-          <PieChartConfigurator widget={widget} onSave={onSave} onClose={onClose} />
+          <PieChartConfigurator
+            key={widget.id}
+            widget={widget}
+            onSave={onSave}
+            onClose={onClose}
+          />
         );
       case 'table':
         return (
-          <TableConfigurator widget={widget} onSave={onSave} onClose={onClose} />
+          <TableConfigurator
+            key={widget.id}
+            widget={widget}
+            onSave={onSave}
+            onClose={onClose}
+          />
         );
       default:
         return <div>No configurator for this widget type.</div>;

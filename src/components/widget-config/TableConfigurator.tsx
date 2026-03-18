@@ -145,8 +145,8 @@ export function TableConfigurator({
       <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col">
         <Tabs defaultValue="data" className="flex-1 flex flex-col">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="data" className="data-[state=active]:bg-primary/80">Data</TabsTrigger>
-            <TabsTrigger value="styling" className="data-[state=active]:bg-primary/80">Styling</TabsTrigger>
+            <TabsTrigger value="data" className="data-[state=active]:bg-success data-[state=active]:text-success-foreground">Data</TabsTrigger>
+            <TabsTrigger value="styling" className="data-[state=active]:bg-success data-[state=active]:text-success-foreground">Styling</TabsTrigger>
           </TabsList>
           <ScrollArea className="flex-1">
             <div className="pr-6">
@@ -282,7 +282,7 @@ export function TableConfigurator({
                             name="sortDirection"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>&nbsp;</FormLabel>
+                                    <FormLabel>Direction</FormLabel>
                                     <Select
                                         onValueChange={field.onChange}
                                         value={field.value}

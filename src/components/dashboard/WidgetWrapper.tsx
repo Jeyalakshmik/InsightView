@@ -40,7 +40,7 @@ export function WidgetWrapper({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6"
+                className="h-6 w-6 cursor-pointer"
                 onClick={() => onConfigure(widget)}
               >
                 <Settings className="h-4 w-4" />
@@ -48,7 +48,7 @@ export function WidgetWrapper({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 text-destructive hover:text-destructive"
+                className="h-6 w-6 cursor-pointer text-destructive hover:text-destructive"
                 onClick={() => onDelete(widget.id)}
               >
                 <Trash2 className="h-4 w-4" />

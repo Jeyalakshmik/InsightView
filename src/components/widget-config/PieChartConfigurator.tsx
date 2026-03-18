@@ -95,7 +95,7 @@ export function PieChartConfigurator({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Widget title *</FormLabel>
+              <FormLabel>Widget title <span className="text-destructive">*</span></FormLabel>
               <FormControl>
                 <Input placeholder="New Pie Chart" {...field} />
               </FormControl>
@@ -128,7 +128,7 @@ export function PieChartConfigurator({
               name="w"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Width (Columns) *</FormLabel>
+                  <FormLabel>Width (Columns) <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
@@ -141,7 +141,7 @@ export function PieChartConfigurator({
               name="h"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Height (Rows) *</FormLabel>
+                  <FormLabel>Height (Rows) <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
@@ -159,7 +159,7 @@ export function PieChartConfigurator({
             name="dataKey"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Chart Data Field *</FormLabel>
+                <FormLabel>Chart Data Field <span className="text-destructive">*</span></FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}

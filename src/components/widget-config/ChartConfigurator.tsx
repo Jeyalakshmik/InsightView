@@ -103,7 +103,7 @@ export function ChartConfigurator({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Widget title *</FormLabel>
+              <FormLabel>Widget title <span className="text-destructive">*</span></FormLabel>
               <FormControl>
                 <Input placeholder="New Chart" {...field} />
               </FormControl>
@@ -135,7 +135,7 @@ export function ChartConfigurator({
               name="w"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Width (Columns) *</FormLabel>
+                  <FormLabel>Width (Columns) <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
@@ -148,7 +148,7 @@ export function ChartConfigurator({
               name="h"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Height (Rows) *</FormLabel>
+                  <FormLabel>Height (Rows) <span className="text-destructive">*</span></FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
@@ -166,7 +166,7 @@ export function ChartConfigurator({
             name="xAxis"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>X-Axis *</FormLabel>
+                <FormLabel>X-Axis <span className="text-destructive">*</span></FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -193,7 +193,7 @@ export function ChartConfigurator({
             name="yAxis"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Y-Axis *</FormLabel>
+                <FormLabel>Y-Axis <span className="text-destructive">*</span></FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}

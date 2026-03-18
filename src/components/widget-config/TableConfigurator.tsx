@@ -27,6 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MultiSelect, type MultiSelectOption } from '@/components/ui/MultiSelect';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import type { DashboardWidget, TableConfig, CustomerOrder, TableFilterOperator } from '@/lib/types';
+import { ScrollArea } from '../ui/scroll-area';
 
 interface TableConfiguratorProps {
   widget: DashboardWidget;
@@ -136,191 +137,195 @@ export function TableConfigurator({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Tabs defaultValue="data">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col">
+        <Tabs defaultValue="data" className="flex-1 flex flex-col">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="data">Data</TabsTrigger>
             <TabsTrigger value="styling">Styling</TabsTrigger>
           </TabsList>
-          <TabsContent value="data" className="mt-4 space-y-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Widget title *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="New Table" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="A brief description of the widget." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <fieldset className="space-y-2">
-                <legend className="text-sm font-medium">Widget size</legend>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField control={form.control} name="w" render={({ field }) => (
+          <ScrollArea className="flex-1">
+            <div className="pr-6">
+              <TabsContent value="data" className="mt-4 space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Width (Columns) *</FormLabel>
-                        <FormControl><Input type="number" {...field} /></FormControl>
+                        <FormLabel>Widget title <span className="text-destructive">*</span></FormLabel>
+                        <FormControl>
+                          <Input placeholder="New Table" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <FormField control={form.control} name="h" render={({ field }) => (
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Height (Rows) *</FormLabel>
-                        <FormControl><Input type="number" {...field} /></FormControl>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="A brief description of the widget." {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
-              </fieldset>
 
-              <fieldset className="space-y-4">
-                <legend className="text-base font-medium">Data setting</legend>
-                <FormField
-                  control={form.control}
-                  name="columns"
-                  render={({ field }) => (
+                  <fieldset className="space-y-2">
+                    <legend className="text-sm font-medium">Widget size</legend>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField control={form.control} name="w" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Width (Columns) <span className="text-destructive">*</span></FormLabel>
+                            <FormControl><Input type="number" {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField control={form.control} name="h" render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Height (Rows) <span className="text-destructive">*</span></FormLabel>
+                            <FormControl><Input type="number" {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </fieldset>
+
+                  <fieldset className="space-y-4">
+                    <legend className="text-base font-medium">Data setting</legend>
+                    <FormField
+                      control={form.control}
+                      name="columns"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Choose columns <span className="text-destructive">*</span></FormLabel>
+                          <FormControl>
+                            <MultiSelect
+                              options={COLUMN_OPTIONS}
+                              selected={field.value}
+                              onChange={field.onChange}
+                              placeholder="Select columns..."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                        <FormField control={form.control} name="sortBy" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Sort by</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="Select column" /></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        {form.getValues('columns').map(c => <SelectItem key={c} value={c}>{(COLUMN_OPTIONS.find(o => o.value === c) || {label: c}).label}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="sortDirection" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Direction</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl><SelectTrigger><SelectValue placeholder="Select direction" /></SelectTrigger></FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="asc">Ascending</SelectItem>
+                                        <SelectItem value="desc">Descending</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </FormItem>
+                        )} />
+                    </div>
+                    <FormField control={form.control} name="rowsPerPage" render={({ field }) => (
+                        <FormItem className="space-y-3">
+                            <FormLabel>Pagination <span className="text-destructive">*</span></FormLabel>
+                            <FormControl>
+                                <RadioGroup onValueChange={field.onChange} defaultValue={String(field.value)} className="flex flex-row space-x-2">
+                                    {[5, 10, 15].map(val => (
+                                        <FormItem key={val} className="flex items-center space-x-2 space-y-0">
+                                            <FormControl><RadioGroupItem value={String(val)} /></FormControl>
+                                            <FormLabel className="font-normal">{val}</FormLabel>
+                                        </FormItem>
+                                    ))}
+                                </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                    <FormField control={form.control} name="applyFilters" render={({ field }) => (
+                        <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                            <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                            <FormLabel className="font-normal">Apply filter</FormLabel>
+                        </FormItem>
+                    )} />
+                    {watchApplyFilters && (
+                        <div className="space-y-4 rounded-md border p-4">
+                            {fields.map((field, index) => (
+                                <div key={field.id} className="flex items-end gap-2">
+                                    <FormField control={form.control} name={`filters.${index}.attribute`} render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                            <FormLabel>Attribute</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl><SelectTrigger><SelectValue placeholder="Attribute" /></SelectTrigger></FormControl>
+                                                <SelectContent>
+                                                    {FILTER_ATTRIBUTE_OPTIONS.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
+                                        </FormItem>
+                                    )}/>
+                                    <FormField control={form.control} name={`filters.${index}.operator`} render={({ field }) => (
+                                        <FormItem className="w-24">
+                                            <FormLabel>Operator</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl><SelectTrigger><SelectValue placeholder="Op" /></SelectTrigger></FormControl>
+                                                <SelectContent>
+                                                    {FILTER_OPERATOR_OPTIONS.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
+                                        </FormItem>
+                                    )}/>
+                                     <FormField control={form.control} name={`filters.${index}.value`} render={({ field }) => (
+                                        <FormItem  className="flex-1">
+                                            <FormLabel>Value</FormLabel>
+                                            <FormControl><Input placeholder="Value" {...field} /></FormControl>
+                                        </FormItem>
+                                     )} />
+                                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                </div>
+                            ))}
+                            <Button type="button" size="sm" variant="outline" onClick={() => append({ attribute: 'product', operator: '=', value: '' })}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Add Filter
+                            </Button>
+                        </div>
+                    )}
+                  </fieldset>
+              </TabsContent>
+              <TabsContent value="styling" className="mt-4 space-y-4">
+                <FormField control={form.control} name="fontSize" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Choose columns *</FormLabel>
-                      <FormControl>
-                        <MultiSelect
-                          options={COLUMN_OPTIONS}
-                          selected={field.value}
-                          onChange={field.onChange}
-                          placeholder="Select columns..."
-                        />
-                      </FormControl>
+                      <FormLabel>Font size (px)</FormLabel>
+                      <FormControl><Input type="number" min={12} max={20} {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="sortBy" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Sort by</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl><SelectTrigger><SelectValue placeholder="Select column" /></SelectTrigger></FormControl>
-                                <SelectContent>
-                                    {form.getValues('columns').map(c => <SelectItem key={c} value={c}>{(COLUMN_OPTIONS.find(o => o.value === c) || {label: c}).label}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </FormItem>
-                    )} />
-                    <FormField control={form.control} name="sortDirection" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Direction</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl><SelectTrigger><SelectValue placeholder="Select direction" /></SelectTrigger></FormControl>
-                                <SelectContent>
-                                    <SelectItem value="asc">Ascending</SelectItem>
-                                    <SelectItem value="desc">Descending</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </FormItem>
-                    )} />
-                </div>
-                <FormField control={form.control} name="rowsPerPage" render={({ field }) => (
-                    <FormItem className="space-y-3">
-                        <FormLabel>Pagination *</FormLabel>
-                        <FormControl>
-                            <RadioGroup onValueChange={field.onChange} defaultValue={String(field.value)} className="flex flex-row space-x-2">
-                                {[5, 10, 15].map(val => (
-                                    <FormItem key={val} className="flex items-center space-x-2 space-y-0">
-                                        <FormControl><RadioGroupItem value={String(val)} /></FormControl>
-                                        <FormLabel className="font-normal">{val}</FormLabel>
-                                    </FormItem>
-                                ))}
-                            </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
+                <FormField control={form.control} name="headerBackgroundColor" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Header background</FormLabel>
+                      <FormControl><Input type="color" {...field} /></FormControl>
+                      <FormMessage />
                     </FormItem>
-                )} />
-                <FormField control={form.control} name="applyFilters" render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-3 space-y-0">
-                        <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                        <FormLabel className="font-normal">Apply filter</FormLabel>
-                    </FormItem>
-                )} />
-                {watchApplyFilters && (
-                    <div className="space-y-4 rounded-md border p-4">
-                        {fields.map((field, index) => (
-                            <div key={field.id} className="flex items-end gap-2">
-                                <FormField control={form.control} name={`filters.${index}.attribute`} render={({ field }) => (
-                                    <FormItem className="flex-1">
-                                        <FormLabel>Attribute</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl><SelectTrigger><SelectValue placeholder="Attribute" /></SelectTrigger></FormControl>
-                                            <SelectContent>
-                                                {FILTER_ATTRIBUTE_OPTIONS.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormItem>
-                                )}/>
-                                <FormField control={form.control} name={`filters.${index}.operator`} render={({ field }) => (
-                                    <FormItem className="w-24">
-                                        <FormLabel>Operator</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl><SelectTrigger><SelectValue placeholder="Op" /></SelectTrigger></FormControl>
-                                            <SelectContent>
-                                                {FILTER_OPERATOR_OPTIONS.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormItem>
-                                )}/>
-                                 <FormField control={form.control} name={`filters.${index}.value`} render={({ field }) => (
-                                    <FormItem  className="flex-1">
-                                        <FormLabel>Value</FormLabel>
-                                        <FormControl><Input placeholder="Value" {...field} /></FormControl>
-                                    </FormItem>
-                                 )} />
-                                <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                            </div>
-                        ))}
-                        <Button type="button" size="sm" variant="outline" onClick={() => append({ attribute: 'product', operator: '=', value: '' })}>
-                            <PlusCircle className="mr-2 h-4 w-4" /> Add Filter
-                        </Button>
-                    </div>
-                )}
-              </fieldset>
-            </TabsContent>
-            <TabsContent value="styling" className="mt-4 space-y-4">
-              <FormField control={form.control} name="fontSize" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Font size (px)</FormLabel>
-                    <FormControl><Input type="number" min={12} max={20} {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField control={form.control} name="headerBackgroundColor" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Header background</FormLabel>
-                    <FormControl><Input type="color" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </TabsContent>
+                  )}
+                />
+              </TabsContent>
+            </div>
+          </ScrollArea>
         </Tabs>
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onClose}>

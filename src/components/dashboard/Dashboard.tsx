@@ -73,7 +73,7 @@ export function Dashboard() {
     toast({
       variant: 'success',
       title: 'All set!',
-      description: 'Your widgets have been added successfully!',
+      description: 'Your changes have been saved successfully!',
     });
   }, [layout, toast]);
 
@@ -111,8 +111,8 @@ export function Dashboard() {
       setDeletingWidget(null);
       toast({
         variant: 'destructive',
-        title: 'Widget Deleted',
-        description: 'The widget has been removed from your dashboard.',
+        title: 'Done!',
+        description: 'Your widget has been removed.',
       });
     }
   };
@@ -133,6 +133,11 @@ export function Dashboard() {
         config: newConfig,
       };
       setLayout(prev => ({ ...prev, widgets: [...prev.widgets, newWidget] }));
+      toast({
+        variant: 'success',
+        title: 'All set!',
+        description: 'Your new widget has been added successfully!',
+      });
     } else {
       // This is an existing widget being updated
       setLayout(prev => ({
@@ -141,6 +146,11 @@ export function Dashboard() {
           w.id === widgetId ? { ...w, config: { ...w.config, ...newConfig } } : w
         ),
       }));
+      toast({
+        variant: 'success',
+        title: 'All set!',
+        description: 'Your changes have been saved successfully!',
+      });
     }
   };
 

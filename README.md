@@ -21,6 +21,9 @@ Click below to watch:
 <img src="https://github.com/user-attachments/assets/bbb85331-55f3-4ce6-8f1a-2c3512274718" />
 
 ## Orders Module (Empty State)
+<img width="1919" height="1199" alt="image" src="https://github.com/user-attachments/assets/d2b236c3-32a6-4534-abcb-ea94846212ab" />
+
+## Dark Mode:
 <img width="1919" height="1195" alt="Screenshot 2026-03-23 200917" src="https://github.com/user-attachments/assets/1afea816-a437-49d9-99bf-962fa7bde034" />
 
 ### Analytics View
